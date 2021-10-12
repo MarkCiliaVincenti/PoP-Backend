@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using PopLibrary;
+using PopLibrary.SqlModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,15 +10,22 @@ using System.Threading.Tasks;
 
 namespace PopApis
 {
-    [Route("api/[controller]")]
+    [Route("api/auctioncontroller")]
     [ApiController]
     public class AuctionController : ControllerBase
     {
+        private SqlAdapter _sqlAdapter;
+        public AuctionController(SqlAdapter sqlAdapter)
+        {
+            _sqlAdapter = sqlAdapter;
+        }
+
         // GET: api/<AuctionController>
         [HttpGet]
-        public IEnumerable<string> Get()
+        public IEnumerable<GetAuctionsResult> Get()
         {
-            return new string[] { "value1", "value2" };
+            var x = _sqlAdapter.ExecuteStoredProcedureAsync<GetAuctionsResult>();
+            return x;
         }
 
         // GET api/<AuctionController>/5
