@@ -17,16 +17,21 @@ namespace PopLibrary
 
         public List<T> ExecuteStoredProcedureAsync<T>(
             string procedureName,
-            IReadOnlyCollection<(string name, SqlDbType sqlDbType, object value)> parameters = null)
+            IReadOnlyCollection<StoredProcedureParameter> parameters = null)
         {
             var ret = new List<T>();
 
             using (SqlConnection con = new SqlConnection(_sqlSettings.PopDbConnectionString))
             {
+                con.Open();
+
                 SqlCommand cmd = new SqlCommand(procedureName, con);
                 if (parameters != null && parameters.Any())
                 {
-                    parameters.Select(param => cmd.Parameters.Add(param.name, param.sqlDbType).Value = param.value);
+                    foreach (var param in parameters)
+                    {
+                        cmd.Parameters.Add(param.Name, param.DbType).Value = param.Value;
+                    }
                 }
                 cmd.CommandType = CommandType.StoredProcedure;
 
