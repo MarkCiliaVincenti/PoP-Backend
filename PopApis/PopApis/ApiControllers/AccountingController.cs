@@ -12,36 +12,56 @@ namespace PopApis.ApiControllers
     [ApiController]
     public class AccountingController : ControllerBase
     {
-        // GET: api/<AccountingController>
-        [HttpGet]
-        public IEnumerable<string> Get()
-        {
-            return new string[] { "value1", "value2" };
-        }
+        /*        // GET: api/<AccountingController>
+                [HttpGet]
+                public IEnumerable<string> Get()
+                {
+                    return new string[] { "value1", "value2" };
+                }
 
-        // GET api/<AccountingController>/5
+                // GET api/<AccountingController>/5
+                [HttpGet("{id}")]
+                public string Get(int id)
+                {
+                    return "value";
+                }
+
+                // POST api/<AccountingController>
+                [HttpPost]
+                public void Post([FromBody] string value)
+                {
+                }
+
+                // PUT api/<AccountingController>/5
+                [HttpPut("{id}")]
+                public void Put(int id, [FromBody] string value)
+                {
+                }
+
+                // DELETE api/<AccountingController>/5
+                [HttpDelete("{id}")]
+                public void Delete(int id)
+                {
+                }
+        */
+
+
+        //GET api/<AccountingController>/1
         [HttpGet("{id}")]
-        public string Get(int id)
+        public string Get(int AuctionId)
         {
+            //TODO tiara
+            //get bid info
             return "value";
         }
 
-        // POST api/<AccountingController>
-        [HttpPost]
-        public void Post([FromBody] string value)
+        //GET api/<AccountingController>/
+        [HttpGet("{id}")]
+        public string Get(string AuctionName)
         {
-        }
-
-        // PUT api/<AccountingController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
-        {
-        }
-
-        // DELETE api/<AccountingController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
+            //TODO tiara
+            //get bid info
+            return "value";
         }
     }
 }
