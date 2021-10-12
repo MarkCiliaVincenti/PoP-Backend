@@ -1,10 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using PopApis.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace PopApis.ApiControllers
 {
@@ -12,6 +13,28 @@ namespace PopApis.ApiControllers
     [ApiController]
     public class AccountingController : ControllerBase
     {
+        AuctionViewModel[] auctions = new AuctionViewModel[]{
+         new AuctionViewModel { AuctionType = 1, AuctionTime = DateTime.Now, AuctionName = "testAuction1", HighestBid =
+             new BidViewModel { BidId = 100, BidAmount = 200000, GuestId = 23498, PaidStatus = false}},
+         new AuctionViewModel { AuctionType = 2, AuctionTime = DateTime.Now, AuctionName = "testAuction2", HighestBid =
+             new BidViewModel { BidId = 234, BidAmount = 20, GuestId = 25345, PaidStatus = true}}};
+
+
+        public IEnumerable<AuctionViewModel> GetAllAuctions()
+        {
+            return auctions;
+        }
+        
+        // GET: api/<AccountingController>/nameExample
+        [HttpGet]
+        public IActionResult GetAuction(string auctionName)
+        {
+            var auction = auctions.FirstOrDefault((a) => a.AuctionName == auctionName);
+            return auction == null ? NotFound() : Ok(auction);
+        }
+
+
+
         /*        // GET: api/<AccountingController>
                 [HttpGet]
                 public IEnumerable<string> Get()
@@ -44,24 +67,5 @@ namespace PopApis.ApiControllers
                 {
                 }
         */
-
-
-        //GET api/<AccountingController>/1
-        [HttpGet("{id}")]
-        public string Get(int AuctionId)
-        {
-            //TODO tiara
-            //get bid info
-            return "value";
-        }
-
-        //GET api/<AccountingController>/
-        [HttpGet("{id}")]
-        public string Get(string AuctionName)
-        {
-            //TODO tiara
-            //get bid info
-            return "value";
-        }
     }
 }
