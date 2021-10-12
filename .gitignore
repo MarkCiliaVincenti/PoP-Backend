@@ -167,3 +167,4 @@ bower_components/
 **/Scripts/lib/
 
 *.gitignore
+/PopApis/PopDb/PopDb.jfm
