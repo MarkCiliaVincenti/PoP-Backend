@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using Microsoft.Data.SqlClient;
 using Newtonsoft.Json;
 
@@ -8,26 +9,38 @@ namespace PopLibrary
 {
     public class SqlAdapter
     {
-        private SqlConnection _sqlConnection;
+        private SqlSettings _sqlSettings;
         public SqlAdapter(SqlSettings sqlSettings)
         {
-            _sqlConnection = new SqlConnection(sqlSettings.PopDbConnectionString);
+            _sqlSettings = sqlSettings;
         }
 
-        public List<T> ExecuteStoredProcedureAsync<T>()
+        public List<T> ExecuteStoredProcedureAsync<T>(
+            string procedureName,
+            IReadOnlyCollection<StoredProcedureParameter> parameters = null)
         {
             var ret = new List<T>();
 
-            _sqlConnection.Open();
-
-            SqlCommand cmd = new SqlCommand("dbo.GetAuctions", _sqlConnection);
-            cmd.CommandType = CommandType.StoredProcedure;
-
-            using (SqlDataReader rdr = cmd.ExecuteReader())
+            using (SqlConnection con = new SqlConnection(_sqlSettings.PopDbConnectionString))
             {
-                ret = JsonConvert.DeserializeObject<List<T>>(SqlDatoToJson(rdr));
+                con.Open();
+
+                SqlCommand cmd = new SqlCommand(procedureName, con);
+                if (parameters != null && parameters.Any())
+                {
+                    foreach (var param in parameters)
+                    {
+                        cmd.Parameters.Add(param.Name, param.DbType).Value = param.Value;
+                    }
+                }
+                cmd.CommandType = CommandType.StoredProcedure;
+
+                using (SqlDataReader rdr = cmd.ExecuteReader())
+                {
+                    ret = JsonConvert.DeserializeObject<List<T>>(SqlDatoToJson(rdr));
+                }
             }
-            _sqlConnection.Close();
+
             return ret;
         }
 
