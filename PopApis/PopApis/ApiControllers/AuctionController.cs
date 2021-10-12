@@ -24,7 +24,7 @@ namespace PopApis
         [HttpGet]
         public IEnumerable<GetAuctionsResult> Get()
         {
-            var x = _sqlAdapter.ExecuteStoredProcedureAsync<GetAuctionsResult>();
+            var x = _sqlAdapter.ExecuteStoredProcedureAsync<GetAuctionsResult>("dbo.GetAuctions");
             return x;
         }
 
