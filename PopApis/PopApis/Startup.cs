@@ -11,6 +11,7 @@ using Microsoft.Extensions.Options;
 using PopApis.Data;
 using PopApis.Models;
 using PopLibrary;
+using PopLibrary.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -49,6 +50,7 @@ namespace PopApis
             services.AddSingleton(sp => sp.GetService<IOptions<Users>>().Value);
             services.AddSingleton(sp => sp.GetService<IOptions<SqlSettings>>().Value);
             services.AddScoped<SqlAdapter>();
+            services.AddScoped<EventData>();
             services.AddScoped<AuctionController>();
         }
 
