@@ -46,6 +46,20 @@ namespace PopApis
             return result;
         }
 
+        // GET api/<AuctionController>/highestbidoftype/1
+        /// <summary>
+        /// Gets highest bid information for all auctions of type <paramref name="auctionTypeId"/>.
+        /// </summary>
+        [HttpGet("highestbidoftype/{auctionTypeId}")]
+        public IEnumerable<GetAuctionBidResult> GetHighestBidForAllAuctionsOfType(int auctionTypeId)
+        {
+            var result = _sqlAdapter.ExecuteStoredProcedureAsync<GetAuctionBidResult>("dbo.GetHighestBidForAllAuctionsOfType", new List<StoredProcedureParameter>
+            {
+                new StoredProcedureParameter { Name="@AuctionTypeId", DbType=SqlDbType.Int, Value=auctionTypeId }
+            });
+            return result;
+        }
+
         // GET api/<AuctionController>/highestbid/2
         /// <summary>
         /// Gets highest bid information for auction with type ID equal to <paramref name="auctionId"/>.
