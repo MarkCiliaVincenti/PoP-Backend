@@ -22,25 +22,42 @@ namespace PopApis
         }
 
         // GET: api/<AuctionController>
+        /// <summary>
+        /// Gets all auctions.
+        /// </summary>
         [HttpGet]
-        public IEnumerable<GetAuctionsResult> Get()
+        public IEnumerable<GetAuctionsResult> GetAuctions()
         {
-            var x = _sqlAdapter.ExecuteStoredProcedureAsync<GetAuctionsResult>("dbo.GetAuctions", new List<StoredProcedureParameter>
-            {
-                new StoredProcedureParameter { Name="@AuctionTypeId", DbType=SqlDbType.Int, Value=1 }
-            });
-            return x;
+            var results = _sqlAdapter.ExecuteStoredProcedureAsync<GetAuctionsResult>("dbo.GetAuctions");
+            return results;
         }
 
         // GET api/<AuctionController>/5
+        /// <summary>
+        /// Gets all auctions with type ID equal to <paramref name="auctionTypeId"/>.
+        /// </summary>
         [HttpGet("{auctionTypeId}")]
-        public IEnumerable<GetAuctionsResult> Get(int auctionTypeId)
+        public IEnumerable<GetAuctionsResult> GetAuctionById(int auctionTypeId)
         {
-            var x = _sqlAdapter.ExecuteStoredProcedureAsync<GetAuctionsResult>("dbo.GetAuctions", new List<StoredProcedureParameter>
+            var result = _sqlAdapter.ExecuteStoredProcedureAsync<GetAuctionsResult>("dbo.GetAuctions", new List<StoredProcedureParameter>
             {
                 new StoredProcedureParameter { Name="@AuctionTypeId", DbType=SqlDbType.Int, Value=auctionTypeId }
             });
-            return x;
+            return result;
+        }
+
+        // GET api/<AuctionController>/highestbid/2
+        /// <summary>
+        /// Gets all auctions with type ID equal to <paramref name="auctionId"/>.
+        /// </summary>
+        [HttpGet("highestbid/{auctionId}")]
+        public IEnumerable<GetAuctionBidResult> GetHighestBidOnAcuction(int auctionId)
+        {
+            var result = _sqlAdapter.ExecuteStoredProcedureAsync<GetAuctionBidResult>("dbo.GetHighestBid", new List<StoredProcedureParameter>
+            {
+                new StoredProcedureParameter { Name="@AuctionId", DbType=SqlDbType.Int, Value=auctionId }
+            });
+            return result;
         }
 
         // POST api/<AuctionController>
