@@ -6,6 +6,9 @@ using System.Data;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using PopApis.Models;
+using KeyedSemaphores;
+using Microsoft.AspNetCore.Http;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -74,22 +77,65 @@ namespace PopApis
             return result;
         }
 
-        // POST api/<AuctionController>
+        // POST api/AuctionController/Bid/1
         [HttpPost]
-        public void Post([FromBody] string value)
+        [Route("Bid/{auctionId}")]
+        public async Task<ActionResult<string>> Bid([FromBody] Bid request, int auctionId)
         {
-        }
+            if (request.Amount <= 0)
+            {
+                return BadRequest("The amount should be at least $1.");
+            }
 
-        // PUT api/<AuctionController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
-        {
-        }
+            if (auctionId <= 0)
+            {
+                return BadRequest("The auction Id must be a valid one.");
+            }
 
-        // DELETE api/<AuctionController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
+            if (string.IsNullOrWhiteSpace(request.Email))
+            {
+                return BadRequest("The customer email should be valid.");
+            }
+
+            // This is used to avoid race condition when 2 users are bidding the some auction id at the same time
+            using (await KeyedSemaphore.LockAsync(auctionId.ToString()))
+            {
+                try
+                {
+                    var highestBids = _sqlAdapter.ExecuteStoredProcedureAsync<GetAuctionBidResult>("dbo.GetHighestBid", new List<StoredProcedureParameter>
+                    {
+                        new StoredProcedureParameter { Name="@AuctionId", DbType=SqlDbType.Int, Value=auctionId }
+                    });
+
+                    if (highestBids.Count > 0)
+                    {
+                        var highestBidAmout = highestBids.First().Amount;
+                        if (request.Amount <= highestBidAmout)
+                        {
+                            return Conflict($"Your bid amount should be greater than ${highestBidAmout}.");
+                        }
+                    }
+
+                    _sqlAdapter.ExecuteStoredProcedureAsync<GetAuctionBidResult>("dbo.AddOrUpdateAuctionBid", new List<StoredProcedureParameter>
+                    {
+                        new StoredProcedureParameter { Name="@AuctionId", DbType=SqlDbType.Int, Value=auctionId },
+                        new StoredProcedureParameter { Name="@Amount", DbType=SqlDbType.Decimal, Value=request.Amount },
+                        new StoredProcedureParameter { Name="@Email", DbType=SqlDbType.NVarChar, Value=request.Email },
+                    });
+
+                    return Ok($"You successfully bid ${request.Amount} for auction Id {auctionId}");
+                }
+                catch (Exception ex)
+                {
+                    var errorMessage = "Error calling Bid API";
+                    if (ex.Message.Contains("conflicted with the FOREIGN KEY", StringComparison.OrdinalIgnoreCase))
+                    {
+                        return BadRequest($"{errorMessage}: There's no auction Id found. Please make sure the auction Id exist.");
+                    }
+
+                    return StatusCode(StatusCodes.Status500InternalServerError, $"{errorMessage}: {ex.Message}");
+                }
+            }
         }
     }
 }
