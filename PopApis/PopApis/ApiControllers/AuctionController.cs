@@ -1,6 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using PopLibrary;
+using PopLibrary.SqlModels;
 using System;
+using System.Data;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -9,23 +12,68 @@ using System.Threading.Tasks;
 
 namespace PopApis
 {
-    [Route("api/[controller]")]
+    [Route("api/auctioncontroller")]
     [ApiController]
     [Authorize(Policy = "Admin")]
     public class AuctionController : ControllerBase
     {
-        // GET: api/<AuctionController>
-        [HttpGet]
-        public IEnumerable<string> Get()
+        private SqlAdapter _sqlAdapter;
+        public AuctionController(SqlAdapter sqlAdapter)
         {
-            return new string[] { "value1", "value2" };
+            _sqlAdapter = sqlAdapter;
+        }
+
+        // GET: api/<AuctionController>
+        /// <summary>
+        /// Gets all auctions.
+        /// </summary>
+        [HttpGet]
+        public IEnumerable<GetAuctionsResult> GetAuctions()
+        {
+            var results = _sqlAdapter.ExecuteStoredProcedureAsync<GetAuctionsResult>("dbo.GetAuctions");
+            return results;
         }
 
         // GET api/<AuctionController>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
+        /// <summary>
+        /// Gets all auctions with type ID equal to <paramref name="auctionTypeId"/>.
+        /// </summary>
+        [HttpGet("{auctionTypeId}")]
+        public IEnumerable<GetAuctionsResult> GetAuctionById(int auctionTypeId)
         {
-            return "value";
+            var result = _sqlAdapter.ExecuteStoredProcedureAsync<GetAuctionsResult>("dbo.GetAuctions", new List<StoredProcedureParameter>
+            {
+                new StoredProcedureParameter { Name="@AuctionTypeId", DbType=SqlDbType.Int, Value=auctionTypeId }
+            });
+            return result;
+        }
+
+        // GET api/<AuctionController>/highestbidoftype/1
+        /// <summary>
+        /// Gets highest bid information for all auctions of type <paramref name="auctionTypeId"/>.
+        /// </summary>
+        [HttpGet("highestbidoftype/{auctionTypeId}")]
+        public IEnumerable<GetAuctionBidResult> GetHighestBidForAllAuctionsOfType(int auctionTypeId)
+        {
+            var result = _sqlAdapter.ExecuteStoredProcedureAsync<GetAuctionBidResult>("dbo.GetHighestBidForAllAuctionsOfType", new List<StoredProcedureParameter>
+            {
+                new StoredProcedureParameter { Name="@AuctionTypeId", DbType=SqlDbType.Int, Value=auctionTypeId }
+            });
+            return result;
+        }
+
+        // GET api/<AuctionController>/highestbid/2
+        /// <summary>
+        /// Gets highest bid information for auction with type ID equal to <paramref name="auctionId"/>.
+        /// </summary>
+        [HttpGet("highestbid/{auctionId}")]
+        public IEnumerable<GetAuctionBidResult> GetHighestBidOnAuction(int auctionId)
+        {
+            var result = _sqlAdapter.ExecuteStoredProcedureAsync<GetAuctionBidResult>("dbo.GetHighestBid", new List<StoredProcedureParameter>
+            {
+                new StoredProcedureParameter { Name="@AuctionId", DbType=SqlDbType.Int, Value=auctionId }
+            });
+            return result;
         }
 
         // POST api/<AuctionController>
