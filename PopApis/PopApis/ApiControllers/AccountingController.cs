@@ -23,7 +23,7 @@ namespace PopApis.ApiControllers
         /// For calcuating totals of bids.
         /// Gets bid auction IDs of all auctions between <paramref name="startDate"/ and <paramref name="endDate">.
         /// </summary>
-        [HttpGet("allIDs/{startDate}/{endDate}")]
+        [HttpGet("ids/{startDate}/{endDate}")]
         public IEnumerable<int> GetAllBidAuctionIDs(DateTime startDate, DateTime endDate)
         {
             var result = _sqlAdapter.ExecuteStoredProcedureAsync<int>("dbo.GetAllAuctionIDs", new List<StoredProcedureParameter>
@@ -39,7 +39,7 @@ namespace PopApis.ApiControllers
         /// For calcuating totals of donations.
         /// Gets all donation amounts between <paramref name="startDate"/ and <paramref name="endDate">.
         /// </summary>
-        [HttpGet("allDonations/{startDate}/{endDate}")]
+        [HttpGet("donations/{startDate}/{endDate}")]
         public IEnumerable<int> GetAllDonationAmounts(DateTime startDate, DateTime endDate)
         {
             var result = _sqlAdapter.ExecuteStoredProcedureAsync<int>("dbo.GetAllDonationAmounts", new List<StoredProcedureParameter>
