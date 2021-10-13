@@ -11,10 +11,10 @@ namespace PopApis.Models
         public int BidId { get; set; }
 
         // The amount of money bidded.
-        public double BidAmount { get; set; }
+        public decimal BidAmount { get; set; }
 
-        // The ID of the guest who submitted the bid.
-        public int GuestId { get; set; }
+        // The email of the guest who submitted the bid.
+        public string GuestId { get; set; }
 
         // Whether or not the bid has been paid.
         public bool PaidStatus { get; set; }
