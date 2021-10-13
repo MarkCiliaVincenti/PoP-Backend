@@ -3,10 +3,12 @@ using PopApis.Models;
 using PopLibrary;
 using PopLibrary.Helpers;
 using PopLibrary.SqlModels;
+using PopLibrary.Stripe;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -20,15 +22,18 @@ namespace PopApis.ApiControllers
         private readonly FinalizeOptions _finalizeOptions;
         private readonly SqlAdapter _sqlAdapter;
         private readonly FinalizeHelper _finalizeHelper;
+        private readonly StripeAdapter _stripeAdapter;
 
         public AccountingController(
             FinalizeOptions finalizeOptions,
             SqlAdapter sqlAdapter,
-            FinalizeHelper finalizeHelper)
+            FinalizeHelper finalizeHelper,
+            StripeAdapter stripeAdapter)
         {
             _finalizeOptions = finalizeOptions;
             _sqlAdapter = sqlAdapter;
             _finalizeHelper = finalizeHelper;
+            _stripeAdapter = stripeAdapter;
         }
 
         // GET: api/<AccountingController>
@@ -72,11 +77,13 @@ namespace PopApis.ApiControllers
             {
                 return "Bad key";
             }
+            _stripeAdapter.GetX();
             // 1. All outstanding donations already in Payment table
             // 2. Ingest silent auction highest bidders to Payment table
             _finalizeHelper.IngestAuctionResultsToPaymentTable((int)AuctionType.Silent);
             // 3. Ingest silent auction highest bidders to Payment table
             _finalizeHelper.IngestAuctionResultsToPaymentTable((int)AuctionType.Live);
+
             return "Finalize operation successful";
         }
     }

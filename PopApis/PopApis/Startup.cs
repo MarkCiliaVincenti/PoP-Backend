@@ -13,6 +13,7 @@ using PopApis.Data;
 using PopApis.Models;
 using PopLibrary;
 using PopLibrary.Helpers;
+using PopLibrary.Stripe;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -56,6 +57,8 @@ namespace PopApis
             services.AddScoped<AuctionController>();
             services.AddScoped<AccountingController>();
             services.AddScoped<FinalizeHelper>();
+            services.AddHttpClient();
+            services.AddSingleton<StripeAdapter>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
