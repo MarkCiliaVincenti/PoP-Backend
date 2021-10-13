@@ -1,11 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using PopLibrary;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+using System.Data;
 
 namespace PopApis.ApiControllers
 {
@@ -14,36 +12,42 @@ namespace PopApis.ApiControllers
     [Authorize(Policy = "Admin")]
     public class AccountingController : ControllerBase
     {
-        // GET: api/<AccountingController>
-        [HttpGet]
-        public IEnumerable<string> Get()
+        private SqlAdapter _sqlAdapter;
+        public AccountingController(SqlAdapter sqlAdapter)
         {
-            return new string[] { "value1", "value2" };
+            _sqlAdapter = sqlAdapter;
         }
 
-        // GET api/<AccountingController>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
+        // GET api/<AccountingController>/allIDs/
+        /// <summary>
+        /// For calcuating totals of bids.
+        /// Gets bid auction IDs of all auctions between <paramref name="startDate"/ and <paramref name="endDate">.
+        /// </summary>
+        [HttpGet("ids/{startDate}/{endDate}")]
+        public IEnumerable<int> GetAllBidAuctionIDs(DateTime startDate, DateTime endDate)
         {
-            return "value";
+            var result = _sqlAdapter.ExecuteStoredProcedureAsync<int>("dbo.GetAllAuctionIDs", new List<StoredProcedureParameter>
+            {
+                new StoredProcedureParameter { Name = "@StartDate", DbType = SqlDbType.DateTime, Value = startDate },
+                new StoredProcedureParameter { Name = "@EndDate", DbType = SqlDbType.DateTime, Value = endDate }
+            });
+            return result;
         }
 
-        // POST api/<AccountingController>
-        [HttpPost]
-        public void Post([FromBody] string value)
+        // GET api/<AccountingController>/allDonations/
+        /// <summary>
+        /// For calcuating totals of donations.
+        /// Gets all donation amounts between <paramref name="startDate"/ and <paramref name="endDate">.
+        /// </summary>
+        [HttpGet("donations/{startDate}/{endDate}")]
+        public IEnumerable<int> GetAllDonationAmounts(DateTime startDate, DateTime endDate)
         {
-        }
-
-        // PUT api/<AccountingController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
-        {
-        }
-
-        // DELETE api/<AccountingController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
+            var result = _sqlAdapter.ExecuteStoredProcedureAsync<int>("dbo.GetAllDonationAmounts", new List<StoredProcedureParameter>
+            {
+                new StoredProcedureParameter { Name = "@StartDate", DbType = SqlDbType.DateTime, Value = startDate },
+                new StoredProcedureParameter { Name = "@EndDate", DbType = SqlDbType.DateTime, Value = endDate }
+            });
+            return result;
         }
     }
 }
