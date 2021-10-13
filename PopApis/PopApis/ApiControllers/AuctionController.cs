@@ -12,9 +12,9 @@ using System.Threading.Tasks;
 
 namespace PopApis
 {
-    [Route("api/auctioncontroller")]
+    [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Policy = "Admin")]
+    [Authorize(Policy = "User")]
     public class AuctionController : ControllerBase
     {
         private SqlAdapter _sqlAdapter;

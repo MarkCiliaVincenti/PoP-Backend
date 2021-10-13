@@ -11,7 +11,7 @@ namespace PopApis.ApiControllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Policy = "User")]
+    [Authorize(Policy = "Admin")]
     public class AccountingController : ControllerBase
     {
         // GET: api/<AccountingController>

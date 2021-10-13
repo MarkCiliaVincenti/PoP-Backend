@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.Options;
+using System;
 using System.Threading.Tasks;
 
 namespace PopLibrary
@@ -6,24 +7,25 @@ namespace PopLibrary
     /// <inheritdoc>
     public class AuthenticationService : IAuthenticationService
     {
-        private const string AdminUserId = "popadmin";
-        private const string AdminPassword = "popadminpassword";
+        private readonly Users ValidUsers;
 
-        private const string StandardUserId = "popstandarduser";
-        private const string StandardUserPassword = "popstandarduserpassword";
+        public AuthenticationService(IOptions<Users> usersConfig)
+        {
+            ValidUsers = usersConfig.Value;
+        }
 
         /// <inheritdoc>
         public async Task<User> AuthenticateAsync(string username, string password)
         {
             // TODO: Write code to get admin/standard user credentials fro config/db
 
-            if (string.Equals(username, AdminUserId, StringComparison.OrdinalIgnoreCase) 
-                && string.Equals(password, AdminPassword, StringComparison.Ordinal))
+            if (string.Equals(username, ValidUsers.AdminUser.Username, StringComparison.OrdinalIgnoreCase) 
+                && string.Equals(password, ValidUsers.AdminUser.Password, StringComparison.Ordinal))
             {
                 return new User { Id = username, Role = Role.Admin, Name = "Admin" };
             }
-            else if (string.Equals(username, StandardUserId, StringComparison.OrdinalIgnoreCase)
-                && string.Equals(password, StandardUserPassword, StringComparison.Ordinal))
+            else if (string.Equals(username, ValidUsers.GlobalUser.Username, StringComparison.OrdinalIgnoreCase)
+                && string.Equals(password, ValidUsers.GlobalUser.Password, StringComparison.Ordinal))
             {
                 return new User { Id = username, Role = Role.User, Name = "User" };
             }
