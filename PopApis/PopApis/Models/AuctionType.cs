@@ -7,7 +7,7 @@
         Live,
         Silent,
         Preview,
-        Any,
+        Donation,
         Rooms
     }
 }
