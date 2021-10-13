@@ -1,4 +1,5 @@
-﻿using PopApis.Data.Interfaces;
+﻿using PopApis.ApiControllers;
+using PopApis.Data.Interfaces;
 using PopApis.Models;
 using System;
 using System.Collections.Generic;
@@ -14,9 +15,12 @@ namespace PopApis.Data
     public class AccountingRepository : IAccountingRepository
     {
         private AuctionController _auctionController;
+        private AccountingController _accountingController;
 
-        public AccountingRepository(AuctionController auctionController) {
+
+        public AccountingRepository(AuctionController auctionController, AccountingController accountingController) {
             _auctionController = auctionController;
+            _accountingController = accountingController;
         }
 
         public AuctionViewModel getAuctionInfoById(int auctionID)
@@ -37,6 +41,12 @@ namespace PopApis.Data
                     PaidStatus = auctionHighestBid.FirstOrDefault().Amount <= 100
                 }
             };
+        }
+
+        public decimal getTotalBidAmount(DateTime startDate, DateTime endDate)
+        {
+            var allAmounts = _accountingController.GetAllAuctionAmounts(startDate, endDate);
+            return 1; //TODO tiara
         }
     }
 }
