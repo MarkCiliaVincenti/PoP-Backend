@@ -26,7 +26,7 @@ namespace PopApis
             _sqlAdapter = sqlAdapter;
         }
 
-        // GET: api/<AuctionController>
+        // GET: api/Auction
         /// <summary>
         /// Gets all auctions.
         /// </summary>
@@ -37,7 +37,7 @@ namespace PopApis
             return results;
         }
 
-        // GET api/<AuctionController>/5
+        // GET api/Auction/5
         /// <summary>
         /// Gets all auctions with type ID equal to <paramref name="auctionTypeId"/>.
         /// </summary>
@@ -51,7 +51,7 @@ namespace PopApis
             return result;
         }
 
-        // GET api/<AuctionController>/highestbidoftype/1
+        // GET api/Auction/highestbidoftype/1
         /// <summary>
         /// Gets highest bid information for all auctions of type <paramref name="auctionTypeId"/>.
         /// </summary>
@@ -65,7 +65,7 @@ namespace PopApis
             return result;
         }
 
-        // GET api/<AuctionController>/highestbid/2
+        // GET api/Auction/highestbid/2
         /// <summary>
         /// Gets highest bid information for auction with type ID equal to <paramref name="auctionId"/>.
         /// </summary>
@@ -79,9 +79,9 @@ namespace PopApis
             return result;
         }
 
-        // POST api/AuctionController/Bid/1
+        // POST api/Auction/bid/1
         [HttpPost]
-        [Route("Bid/{auctionId}")]
+        [Route("bid/{auctionId}")]
         public async Task<ActionResult<string>> Bid([FromBody] Bid request, int auctionId)
         {
             if (request.Amount <= 0)
