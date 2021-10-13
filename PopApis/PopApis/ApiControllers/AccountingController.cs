@@ -1,7 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PopApis.Models;
+using PopLibrary;
+using PopLibrary.Helpers;
+using PopLibrary.SqlModels;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -14,9 +18,17 @@ namespace PopApis.ApiControllers
     public class AccountingController : ControllerBase
     {
         private readonly FinalizeOptions _finalizeOptions;
-        public AccountingController(FinalizeOptions finalizeOptions)
+        private readonly SqlAdapter _sqlAdapter;
+        private readonly FinalizeHelper _finalizeHelper;
+
+        public AccountingController(
+            FinalizeOptions finalizeOptions,
+            SqlAdapter sqlAdapter,
+            FinalizeHelper finalizeHelper)
         {
             _finalizeOptions = finalizeOptions;
+            _sqlAdapter = sqlAdapter;
+            _finalizeHelper = finalizeHelper;
         }
 
         // GET: api/<AccountingController>
@@ -55,10 +67,16 @@ namespace PopApis.ApiControllers
         [HttpPost("finalize")]
         public string PostFinalize([FromBody] string key)
         {
+            // TODO: encrypt
             if (key != _finalizeOptions.FinalizeKey)
             {
                 return "Bad key";
             }
+            // 1. All outstanding donations already in Payment table
+            // 2. Ingest silent auction highest bidders to Payment table
+            _finalizeHelper.IngestAuctionResultsToPaymentTable((int)AuctionType.Silent);
+            // 3. Ingest silent auction highest bidders to Payment table
+            _finalizeHelper.IngestAuctionResultsToPaymentTable((int)AuctionType.Live);
             return "Finalize operation successful";
         }
     }

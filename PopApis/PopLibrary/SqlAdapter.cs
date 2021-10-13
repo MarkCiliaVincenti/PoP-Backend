@@ -44,6 +44,30 @@ namespace PopLibrary
             return ret;
         }
 
+        public void ExecuteStoredProcedureAsync(
+            string procedureName,
+            IReadOnlyCollection<StoredProcedureParameter> parameters = null)
+        {
+            using (SqlConnection con = new SqlConnection(_sqlSettings.PopDbConnectionString))
+            {
+                con.Open();
+
+                SqlCommand cmd = new SqlCommand(procedureName, con);
+                if (parameters != null && parameters.Any())
+                {
+                    foreach (var param in parameters)
+                    {
+                        cmd.Parameters.Add(param.Name, param.DbType).Value = param.Value;
+                    }
+                }
+                cmd.CommandType = CommandType.StoredProcedure;
+
+                SqlDataReader rdr = cmd.ExecuteReader();
+            }
+
+            return;
+        }
+
         private string SqlDatoToJson(SqlDataReader dataReader)
         {
             var dataTable = new DataTable();

@@ -12,6 +12,7 @@ using PopApis.ApiControllers;
 using PopApis.Data;
 using PopApis.Models;
 using PopLibrary;
+using PopLibrary.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -47,13 +48,14 @@ namespace PopApis
 
             services.Configure<Users>(Configuration.GetSection("Users"));
             services.Configure<SqlSettings>(Configuration.GetSection("ConnectionStrings"));
-            services.Configure<FinalizeOptions>(Configuration.GetSection("FinalizeKey"));
+            services.Configure<FinalizeOptions>(Configuration.GetSection("FinalizeOptions"));
             services.AddSingleton(sp => sp.GetService<IOptions<Users>>().Value);
             services.AddSingleton(sp => sp.GetService<IOptions<SqlSettings>>().Value);
             services.AddSingleton(sp => sp.GetService<IOptions<FinalizeOptions>>().Value);
             services.AddScoped<SqlAdapter>();
             services.AddScoped<AuctionController>();
             services.AddScoped<AccountingController>();
+            services.AddScoped<FinalizeHelper>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

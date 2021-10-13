@@ -10,7 +10,7 @@ CREATE PROCEDURE [dbo].[AddOrUpdateCustomer]
 )
 AS
 BEGIN
-   
+
    IF @CustomerId IS NULL
    BEGIN
 	   INSERT INTO [dbo].[Customer]
@@ -28,7 +28,12 @@ BEGIN
 		   SET [Email] = @Email
 			  ,[StripeCustomerId] = @StripeCustomerId
 			  ,[Created] = @Created
-		 WHERE 
-			Id = @CustomerId	
-	END   
+		 WHERE
+			Id = @CustomerId
+	END
+    BEGIN
+        SELECT TOP 1 Id FROM [dbo].[Customer]
+        WHERE Email = @Email
+    END
    END
+GO
