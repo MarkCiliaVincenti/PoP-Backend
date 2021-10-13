@@ -23,10 +23,10 @@ namespace PopApis.ApiControllers
         /// For calcuating totals of bids.
         /// Gets bid auction IDs of all auctions between <paramref name="startDate"/ and <paramref name="endDate">.
         /// </summary>
-        [HttpGet("ids/{startDate}/{endDate}")]
-        public IEnumerable<int> GetAllBidAuctionIDs(DateTime startDate, DateTime endDate)
+        [HttpGet("ids/")]
+        public IEnumerable<int> GetAllBidAuctionIDs([FromQuery] DateTime startDate, [FromQuery] DateTime endDate)
         {
-            var result = _sqlAdapter.ExecuteStoredProcedureAsync<int>("dbo.GetAllAuctionIDs", new List<StoredProcedureParameter>
+            var result = _sqlAdapter.ExecuteStoredProcedure<int>("dbo.GetAllAuctionIDs", new List<StoredProcedureParameter>
             {
                 new StoredProcedureParameter { Name = "@StartDate", DbType = SqlDbType.DateTime, Value = startDate },
                 new StoredProcedureParameter { Name = "@EndDate", DbType = SqlDbType.DateTime, Value = endDate }
@@ -39,10 +39,10 @@ namespace PopApis.ApiControllers
         /// For calcuating totals of donations.
         /// Gets all donation amounts between <paramref name="startDate"/ and <paramref name="endDate">.
         /// </summary>
-        [HttpGet("donations/{startDate}/{endDate}")]
-        public IEnumerable<int> GetAllDonationAmounts(DateTime startDate, DateTime endDate)
+        [HttpGet("donations/")]
+        public IEnumerable<int> GetAllDonationAmounts([FromQuery] DateTime startDate, [FromQuery] DateTime endDate)
         {
-            var result = _sqlAdapter.ExecuteStoredProcedureAsync<int>("dbo.GetAllDonationAmounts", new List<StoredProcedureParameter>
+            var result = _sqlAdapter.ExecuteStoredProcedure<int>("dbo.GetAllDonationAmounts", new List<StoredProcedureParameter>
             {
                 new StoredProcedureParameter { Name = "@StartDate", DbType = SqlDbType.DateTime, Value = startDate },
                 new StoredProcedureParameter { Name = "@EndDate", DbType = SqlDbType.DateTime, Value = endDate }
