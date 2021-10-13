@@ -14,7 +14,7 @@ namespace PopLibrary.Data
         }
         public IEnumerable<Event> GetEvents()
         {
-            return _sqlAdapter.ExecuteStoredProcedureAsync<Event>("dbo.GetEvents");
+            return _sqlAdapter.ExecuteStoredProcedure<Event>("dbo.GetEvents");
         }
 
         public void AddOrUpdateEvent(Event itemToUpdate)
@@ -38,7 +38,7 @@ namespace PopLibrary.Data
                     }
             );
 
-            _sqlAdapter.ExecuteStoredProcedureAsync<int>("dbo.AddOrUpdateEvent", parameters);
+            _sqlAdapter.ExecuteStoredProcedure<int>("dbo.AddOrUpdateEvent", parameters);
         }
 
         public void DeleteEvent(int eventId)
@@ -47,7 +47,7 @@ namespace PopLibrary.Data
             new StoredProcedureParameter { Name = "@EventId", DbType = SqlDbType.Int, Value = eventId }
             };
 
-            _sqlAdapter.ExecuteStoredProcedureAsync<int>("dbo.DeleteEvent", parameters);
+            _sqlAdapter.ExecuteStoredProcedure<int>("dbo.DeleteEvent", parameters);
         }
     }
 }

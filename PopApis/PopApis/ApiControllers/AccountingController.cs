@@ -26,7 +26,7 @@ namespace PopApis.ApiControllers
         [HttpGet("ids/{startDate}/{endDate}")]
         public IEnumerable<int> GetAllBidAuctionIDs(DateTime startDate, DateTime endDate)
         {
-            var result = _sqlAdapter.ExecuteStoredProcedureAsync<int>("dbo.GetAllAuctionIDs", new List<StoredProcedureParameter>
+            var result = _sqlAdapter.ExecuteStoredProcedure<int>("dbo.GetAllAuctionIDs", new List<StoredProcedureParameter>
             {
                 new StoredProcedureParameter { Name = "@StartDate", DbType = SqlDbType.DateTime, Value = startDate },
                 new StoredProcedureParameter { Name = "@EndDate", DbType = SqlDbType.DateTime, Value = endDate }
@@ -42,7 +42,7 @@ namespace PopApis.ApiControllers
         [HttpGet("donations/{startDate}/{endDate}")]
         public IEnumerable<int> GetAllDonationAmounts(DateTime startDate, DateTime endDate)
         {
-            var result = _sqlAdapter.ExecuteStoredProcedureAsync<int>("dbo.GetAllDonationAmounts", new List<StoredProcedureParameter>
+            var result = _sqlAdapter.ExecuteStoredProcedure<int>("dbo.GetAllDonationAmounts", new List<StoredProcedureParameter>
             {
                 new StoredProcedureParameter { Name = "@StartDate", DbType = SqlDbType.DateTime, Value = startDate },
                 new StoredProcedureParameter { Name = "@EndDate", DbType = SqlDbType.DateTime, Value = endDate }
