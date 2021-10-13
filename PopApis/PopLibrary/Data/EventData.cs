@@ -40,5 +40,14 @@ namespace PopLibrary.Data
 
             _sqlAdapter.ExecuteStoredProcedureAsync<int>("dbo.AddOrUpdateEvent", parameters);
         }
+
+        public void DeleteEvent(int eventId)
+        {
+            var parameters = new List<StoredProcedureParameter>() {
+            new StoredProcedureParameter { Name = "@EventId", DbType = SqlDbType.Int, Value = eventId }
+            };
+
+            _sqlAdapter.ExecuteStoredProcedureAsync<int>("dbo.DeleteEvent", parameters);
+        }
     }
 }

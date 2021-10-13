@@ -10,5 +10,6 @@ namespace PopApis.Data
             : base(options)
         {
         }
+        public DbSet<PopLibrary.SqlModels.Event> Event { get; set; }
     }
 }

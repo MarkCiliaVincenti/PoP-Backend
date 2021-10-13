@@ -1,7 +1,7 @@
 ﻿@model IEnumerable<PopLibrary.SqlModels.Event>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "List Events";
 }
 
 <h1>Index</h1>
@@ -80,7 +80,6 @@
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
                 <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
             </td>
         </tr>

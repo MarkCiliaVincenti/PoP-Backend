@@ -24,6 +24,20 @@ namespace PopApis.Controllers
             return View("Index", _data.GetEvents());
         }
 
+        // GET: Events/Create
+        public ActionResult Create()
+        {
+            return View();
+        }
+
+        // POST: Events/Create
+        [HttpPost]
+        public ActionResult Create(Event itemToAdd)
+        {
+            _data.AddOrUpdateEvent(itemToAdd);
+            return RedirectToAction("Index", _data.GetEvents());
+        }
+
         public ActionResult Edit(int id)
         {
             return View(_data.GetEvents().ToList().Find(t => t.Id == id));
@@ -33,15 +47,14 @@ namespace PopApis.Controllers
         [HttpPost]
         public ActionResult Edit(int id, Event itemToUpdate)
         {
-            try
-            {
                 _data.AddOrUpdateEvent(itemToUpdate);
                 return RedirectToAction("Index", _data.GetEvents());
-            }
-            catch(Exception Ex)
-            {
-                return RedirectToAction("Index", _data.GetEvents());
-            }
+        }
+
+        public ActionResult Delete(int id)
+        {
+            _data.DeleteEvent(id);
+            return RedirectToAction("Index", _data.GetEvents());
         }
     }
 }
