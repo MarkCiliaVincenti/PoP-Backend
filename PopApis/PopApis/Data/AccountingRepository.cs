@@ -46,7 +46,7 @@ namespace PopApis.Data
         public decimal getTotalBidAmount(DateTime startDate, DateTime endDate)
         {
             var allAmounts = _accountingController.GetAllAuctionAmounts(startDate, endDate);
-            return 1; //TODO tiara
+            return allAmounts.Sum();
         }
     }
 }
