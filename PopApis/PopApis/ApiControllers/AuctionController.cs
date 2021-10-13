@@ -33,7 +33,7 @@ namespace PopApis
         [HttpGet]
         public IEnumerable<GetAuctionsResult> GetAuctions()
         {
-            var results = _sqlAdapter.ExecuteStoredProcedureAsync<GetAuctionsResult>("dbo.GetAuctions");
+            var results = _sqlAdapter.ExecuteStoredProcedure<GetAuctionsResult>("dbo.GetAuctions");
             return results;
         }
 
@@ -44,7 +44,7 @@ namespace PopApis
         [HttpGet("{auctionTypeId}")]
         public IEnumerable<GetAuctionsResult> GetAuctionById(int auctionTypeId)
         {
-            var result = _sqlAdapter.ExecuteStoredProcedureAsync<GetAuctionsResult>("dbo.GetAuctions", new List<StoredProcedureParameter>
+            var result = _sqlAdapter.ExecuteStoredProcedure<GetAuctionsResult>("dbo.GetAuctions", new List<StoredProcedureParameter>
             {
                 new StoredProcedureParameter { Name="@AuctionTypeId", DbType=SqlDbType.Int, Value=auctionTypeId }
             });
@@ -58,7 +58,7 @@ namespace PopApis
         [HttpGet("highestbidoftype/{auctionTypeId}")]
         public IEnumerable<GetAuctionBidResult> GetHighestBidForAllAuctionsOfType(int auctionTypeId)
         {
-            var result = _sqlAdapter.ExecuteStoredProcedureAsync<GetAuctionBidResult>("dbo.GetHighestBidForAllAuctionsOfType", new List<StoredProcedureParameter>
+            var result = _sqlAdapter.ExecuteStoredProcedure<GetAuctionBidResult>("dbo.GetHighestBidForAllAuctionsOfType", new List<StoredProcedureParameter>
             {
                 new StoredProcedureParameter { Name="@AuctionTypeId", DbType=SqlDbType.Int, Value=auctionTypeId }
             });
@@ -72,11 +72,7 @@ namespace PopApis
         [HttpGet("highestbid/{auctionId}")]
         public IEnumerable<GetAuctionBidResult> GetHighestBidOnAuction(int auctionId)
         {
-            var result = _sqlAdapter.ExecuteStoredProcedureAsync<GetAuctionBidResult>("dbo.GetHighestBid", new List<StoredProcedureParameter>
-            {
-                new StoredProcedureParameter { Name="@AuctionId", DbType=SqlDbType.Int, Value=auctionId }
-            });
-            return result;
+            return GetHighestBidByAuctionId(auctionId);
         }
 
         // POST api/Auction/bid/1
@@ -104,10 +100,7 @@ namespace PopApis
             {
                 try
                 {
-                    var highestBids = _sqlAdapter.ExecuteStoredProcedureAsync<GetAuctionBidResult>("dbo.GetHighestBid", new List<StoredProcedureParameter>
-                    {
-                        new StoredProcedureParameter { Name="@AuctionId", DbType=SqlDbType.Int, Value=auctionId }
-                    });
+                    var highestBids = GetHighestBidByAuctionId(auctionId).ToList();
 
                     if (highestBids.Count > 0)
                     {
@@ -118,7 +111,7 @@ namespace PopApis
                         }
                     }
 
-                    _sqlAdapter.ExecuteStoredProcedureAsync<GetAuctionBidResult>("dbo.AddOrUpdateAuctionBid", new List<StoredProcedureParameter>
+                    _sqlAdapter.ExecuteStoredProcedure<GetAuctionBidResult>("dbo.AddOrUpdateAuctionBid", new List<StoredProcedureParameter>
                     {
                         new StoredProcedureParameter { Name="@AuctionId", DbType=SqlDbType.Int, Value=auctionId },
                         new StoredProcedureParameter { Name="@Amount", DbType=SqlDbType.Decimal, Value=request.Amount },
@@ -138,6 +131,14 @@ namespace PopApis
                     return StatusCode(StatusCodes.Status500InternalServerError, $"{errorMessage}: {ex.Message}");
                 }
             }
+        }
+
+        private IEnumerable<GetAuctionBidResult> GetHighestBidByAuctionId(int auctionId)
+        {
+            return _sqlAdapter.ExecuteStoredProcedure<GetAuctionBidResult>("dbo.GetHighestBid", new List<StoredProcedureParameter>
+            {
+                new StoredProcedureParameter { Name="@AuctionId", DbType=SqlDbType.Int, Value=auctionId }
+            });
         }
     }
 }

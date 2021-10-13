@@ -15,7 +15,7 @@ namespace PopLibrary
             _sqlSettings = sqlSettings;
         }
 
-        public List<T> ExecuteStoredProcedureAsync<T>(
+        public List<T> ExecuteStoredProcedure<T>(
             string procedureName,
             IReadOnlyCollection<StoredProcedureParameter> parameters = null)
         {
