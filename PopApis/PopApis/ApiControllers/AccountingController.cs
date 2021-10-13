@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using PopApis.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +13,12 @@ namespace PopApis.ApiControllers
     [ApiController]
     public class AccountingController : ControllerBase
     {
+        private readonly FinalizeOptions _finalizeOptions;
+        public AccountingController(FinalizeOptions finalizeOptions)
+        {
+            _finalizeOptions = finalizeOptions;
+        }
+
         // GET: api/<AccountingController>
         [HttpGet]
         public IEnumerable<string> Get()
@@ -42,6 +49,17 @@ namespace PopApis.ApiControllers
         [HttpDelete("{id}")]
         public void Delete(int id)
         {
+        }
+
+        // POST api/<AccountingController>
+        [HttpPost("finalize")]
+        public string PostFinalize([FromBody] string key)
+        {
+            if (key != _finalizeOptions.FinalizeKey)
+            {
+                return "Bad key";
+            }
+            return "Finalize operation successful";
         }
     }
 }
