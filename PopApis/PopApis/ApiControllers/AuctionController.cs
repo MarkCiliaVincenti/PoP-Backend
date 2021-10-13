@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using PopLibrary;
 using PopLibrary.SqlModels;
 using System;
@@ -14,8 +15,9 @@ using Microsoft.AspNetCore.Http;
 
 namespace PopApis
 {
-    [Route("api/auctioncontroller")]
+    [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Policy = "User")]
     public class AuctionController : ControllerBase
     {
         private SqlAdapter _sqlAdapter;
