@@ -17,12 +17,12 @@ namespace PopApis.Data
         private AuctionController _auctionController;
         private AccountingController _accountingController;
 
-
         public AccountingRepository(AuctionController auctionController, AccountingController accountingController) {
             _auctionController = auctionController;
             _accountingController = accountingController;
         }
 
+        /// <inheritdoc/>
         public AuctionViewModel getAuctionInfoById(int auctionID)
         {
             var auctionDetails = _auctionController.GetAuctionById(auctionID);
@@ -43,6 +43,7 @@ namespace PopApis.Data
             };
         }
 
+        /// <inheritdoc/>
         public decimal getTotalBidAmount(DateTime startDate, DateTime endDate)
         {
             var allIds = _accountingController.GetAllBidAuctionIDs(startDate, endDate);
@@ -51,12 +52,14 @@ namespace PopApis.Data
             return highestBidAmounts.Sum();
         }
 
+        /// <inheritdoc/>
         public decimal getTotalDonationAmount(DateTime startDate, DateTime endDate)
         {
             var allDonationAmounts = _accountingController.GetAllDonationAmounts(startDate, endDate);
             return allDonationAmounts.Sum();            
         }
 
+        /// <inheritdoc/>
         public decimal getTotal(DateTime startDate, DateTime endDate)
         {
             return this.getTotalBidAmount(startDate, endDate) + this.getTotalDonationAmount(startDate, endDate);

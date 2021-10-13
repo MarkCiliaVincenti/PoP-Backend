@@ -13,7 +13,6 @@ namespace PopApis.ApiControllers
     public class AccountingController : ControllerBase
     {
         private SqlAdapter _sqlAdapter;
-
         public AccountingController(SqlAdapter sqlAdapter)
         {
             _sqlAdapter = sqlAdapter;
