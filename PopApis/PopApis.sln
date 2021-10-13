@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PopApis", "PopApis\PopApis.
 EndProject
 Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "PopDb", "PopDb\PopDb.sqlproj", "{0DC29531-0865-41CE-91A2-FC94436AFB43}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PopLibrary", "PopLibrary\PopLibrary.csproj", "{262505FD-EE89-4B1D-8F9E-20152C24E03D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PopLibrary", "PopLibrary\PopLibrary.csproj", "{262505FD-EE89-4B1D-8F9E-20152C24E03D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
