@@ -14,9 +14,9 @@ namespace PopApis.ApiControllers
     public class AccountingController : ControllerBase
     {
         AuctionViewModel[] auctions = new AuctionViewModel[]{
-         new AuctionViewModel { AuctionType = 1, AuctionTime = DateTime.Now, AuctionName = "testAuction1", HighestBid =
+         new AuctionViewModel { AuctionType = AuctionType.Live, AuctionTime = DateTime.Now, AuctionName = "testAuction1", HighestBid =
              new BidViewModel { BidId = 100, BidAmount = 200000, GuestId = 23498, PaidStatus = false}},
-         new AuctionViewModel { AuctionType = 2, AuctionTime = DateTime.Now, AuctionName = "testAuction2", HighestBid =
+         new AuctionViewModel { AuctionType = AuctionType.Silent, AuctionTime = DateTime.Now, AuctionName = "testAuction2", HighestBid =
              new BidViewModel { BidId = 234, BidAmount = 20, GuestId = 25345, PaidStatus = true}}};
 
 

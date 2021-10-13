@@ -8,7 +8,7 @@ namespace PopApis.Models
     public class AuctionViewModel
     {
         // The type of auction (ex. live or silent)
-        public int AuctionType { get; set; }
+        public AuctionType AuctionType { get; set; }
 
         // When the auction completed.
         public DateTime AuctionTime { get; set; }
