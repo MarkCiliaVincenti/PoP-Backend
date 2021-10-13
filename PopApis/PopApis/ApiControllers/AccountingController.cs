@@ -17,15 +17,15 @@ namespace PopApis.ApiControllers
             _sqlAdapter = sqlAdapter;
         }
 
-        // total bid
-        // GET api/<AccountingController>/all/
+        // GET api/<AccountingController>/allIDs/
         /// <summary>
-        /// Gets final bid amount of all auctions between <paramref name="startDate"/ and <paramref name="endDate">.
+        /// For calcuating totals of bids.
+        /// Gets bid auction IDs of all auctions between <paramref name="startDate"/ and <paramref name="endDate">.
         /// </summary>
-        [HttpGet("all/{startDate}/{endDate}")]
-        public IEnumerable<decimal> GetAllAuctionAmounts(DateTime startDate, DateTime endDate)
+        [HttpGet("allIDs/{startDate}/{endDate}")]
+        public IEnumerable<int> GetAllBidAuctionIDs(DateTime startDate, DateTime endDate)
         {
-            var result = _sqlAdapter.ExecuteStoredProcedureAsync<decimal>("dbo.GetAllAuctionAmounts", new List<StoredProcedureParameter>
+            var result = _sqlAdapter.ExecuteStoredProcedureAsync<int>("dbo.GetAllAuctionIDs", new List<StoredProcedureParameter>
             {
                 new StoredProcedureParameter { Name = "@StartDate", DbType = SqlDbType.DateTime, Value = startDate },
                 new StoredProcedureParameter { Name = "@EndDate", DbType = SqlDbType.DateTime, Value = endDate }
@@ -33,6 +33,20 @@ namespace PopApis.ApiControllers
             return result;
         }
 
-        // total donation
+        // GET api/<AccountingController>/allDonations/
+        /// <summary>
+        /// For calcuating totals of donations.
+        /// Gets all donation amounts between <paramref name="startDate"/ and <paramref name="endDate">.
+        /// </summary>
+        [HttpGet("allDonations/{startDate}/{endDate}")]
+        public IEnumerable<int> GetAllDonationAmounts(DateTime startDate, DateTime endDate)
+        {
+            var result = _sqlAdapter.ExecuteStoredProcedureAsync<int>("dbo.GetAllDonationAmounts", new List<StoredProcedureParameter>
+            {
+                new StoredProcedureParameter { Name = "@StartDate", DbType = SqlDbType.DateTime, Value = startDate },
+                new StoredProcedureParameter { Name = "@EndDate", DbType = SqlDbType.DateTime, Value = endDate }
+            });
+            return result;
+        }
     }
 }

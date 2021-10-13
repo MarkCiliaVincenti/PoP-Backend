@@ -45,8 +45,21 @@ namespace PopApis.Data
 
         public decimal getTotalBidAmount(DateTime startDate, DateTime endDate)
         {
-            var allAmounts = _accountingController.GetAllAuctionAmounts(startDate, endDate);
-            return allAmounts.Sum();
+            var allIds = _accountingController.GetAllBidAuctionIDs(startDate, endDate);
+            List<decimal> highestBidAmounts = new();
+            highestBidAmounts.AddRange(allIds.Select(i => _auctionController.GetHighestBidOnAuction(i).FirstOrDefault().Amount));
+            return highestBidAmounts.Sum();
+        }
+
+        public decimal getTotalDonationAmount(DateTime startDate, DateTime endDate)
+        {
+            var allDonationAmounts = _accountingController.GetAllDonationAmounts(startDate, endDate);
+            return allDonationAmounts.Sum();            
+        }
+
+        public decimal getTotal(DateTime startDate, DateTime endDate)
+        {
+            return this.getTotalBidAmount(startDate, endDate) + this.getTotalDonationAmount(startDate, endDate);
         }
     }
 }
