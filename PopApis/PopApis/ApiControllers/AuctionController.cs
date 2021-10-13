@@ -48,10 +48,10 @@ namespace PopApis
 
         // GET api/<AuctionController>/highestbid/2
         /// <summary>
-        /// Gets all auctions with type ID equal to <paramref name="auctionId"/>.
+        /// Gets highest bid information for auction with type ID equal to <paramref name="auctionId"/>.
         /// </summary>
         [HttpGet("highestbid/{auctionId}")]
-        public IEnumerable<GetAuctionBidResult> GetHighestBidOnAcuction(int auctionId)
+        public IEnumerable<GetAuctionBidResult> GetHighestBidOnAuction(int auctionId)
         {
             var result = _sqlAdapter.ExecuteStoredProcedureAsync<GetAuctionBidResult>("dbo.GetHighestBid", new List<StoredProcedureParameter>
             {
