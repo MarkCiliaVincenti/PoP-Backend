@@ -193,4 +193,7 @@
       <QuotedIdentifier>On</QuotedIdentifier>
     </Build>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="dbo\Stored Procedures\GetHighestBid.sql" />
+  </ItemGroup>
 </Project>
