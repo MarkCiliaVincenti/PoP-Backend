@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using PopLibrary;
 using System;
 using System.Collections.Generic;
@@ -8,6 +9,7 @@ namespace PopApis.ApiControllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Policy = "Admin")]
     public class AccountingController : ControllerBase
     {
         private SqlAdapter _sqlAdapter;

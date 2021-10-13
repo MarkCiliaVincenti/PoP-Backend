@@ -34,6 +34,13 @@ BEGIN
 		,[Timestamp] = COALESCE(@Timestamp, GETUTCDATE())
 		WHERE 
 			AuctionId = @AuctionId	AND Email = @Email
-	END   
+	END 
+	BEGIN
+	 -- Update the bid amount for for an auction
+		UPDATE [dbo].[Auction]
+		 SET [Amount] = @Amount
+		,[Created] = COALESCE(@Timestamp, GETUTCDATE())
+		WHERE 
+			Id = @AuctionId
+	END 
    END
-
