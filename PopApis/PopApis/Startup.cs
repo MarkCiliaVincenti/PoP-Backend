@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -7,10 +8,12 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using PopApis.Data;
+using Microsoft.Extensions.Logging;
+using PopLibrary;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace PopApis
@@ -27,14 +30,21 @@ namespace PopApis
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(
-                    Configuration.GetConnectionString("DefaultConnection")));
-            services.AddDatabaseDeveloperPageExceptionFilter();
+            services.AddLogging(logger => logger.AddConsole());
 
-            services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
-                .AddEntityFrameworkStores<ApplicationDbContext>();
+            services.AddAuthentication("BasicAuthentication").
+                AddScheme<AuthenticationSchemeOptions, BasicAuthenticationHandler>("BasicAuthentication", null);
+
             services.AddControllersWithViews();
+            services.AddRazorPages();
+
+            services.AddScoped<PopLibrary.IAuthenticationService, PopLibrary.AuthenticationService>();
+
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("Admin", policy => policy.RequireClaim(ClaimTypes.Role, Role.Admin));
+                options.AddPolicy("User", policy => policy.RequireClaim(ClaimTypes.Role, Role.Admin, Role.User));
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
