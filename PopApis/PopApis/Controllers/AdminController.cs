@@ -1,21 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 
 namespace PopApis.Controllers
 {
-    public class AdminController : Controller
+    public class AdminController : CommonController
     {
         // GET: AdminController
         public ActionResult Index()
         {
-            return View();
+            return ViewWithSession ();
         }
-
 
         // GET: AdminController/Create
         public ActionResult Create()
