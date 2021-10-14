@@ -1,0 +1,10 @@
+{
+  "dependencies": {
+    "mssql2": {
+      "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroupName')]/providers/Microsoft.Sql/servers/pencils-dev/databases/pencils",
+      "type": "mssql.azure",
+      "connectionId": "ConnectionStrings:PopDbConnectionString",
+      "secretStore": "AzureAppSettings"
+    }
+  }
+}

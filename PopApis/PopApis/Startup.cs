@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using PopApis.Models;
 using PopLibrary;
+using PopLibrary.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -38,6 +39,12 @@ namespace PopApis
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddLogging(logger => logger.AddConsole());
+            services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromSeconds(10);
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
+            });
 
             services.AddAuthentication("BasicAuthentication").
                 AddScheme<AuthenticationSchemeOptions, BasicAuthenticationHandler>("BasicAuthentication", null);
@@ -56,6 +63,7 @@ namespace PopApis
             services.AddSingleton(sp => sp.GetService<IOptions<Users>>().Value);
             services.AddSingleton(sp => sp.GetService<IOptions<SqlSettings>>().Value);
             services.AddScoped<SqlAdapter>();
+            services.AddScoped<EventData>();
             services.AddScoped<AuctionController>();
             services.AddScoped<PopLibrary.IAuthenticationService, PopLibrary.AuthenticationService>();
         }
@@ -78,6 +86,7 @@ namespace PopApis
             app.UseStaticFiles();
 
             app.UseRouting();
+            app.UseSession();
 
             app.UseAuthentication();
             app.UseAuthorization();
