@@ -30,17 +30,20 @@ namespace PopLibrary.Stripe
             return customer.Id;
         }
 
-        public string GetOrCreateInvoiceItem(string email)
+        public string GetOrCreateInvoiceItem(string customerId, decimal amount, string description)
         {
             StripeConfiguration.ApiKey = "sk_test_51JkGVHDElXhh7M42Fo8vSv9bozntSKa458CzLF1dnnaM92t3oVgsLW8Sial62Ra5t1Z6UqN7T1AAcIMQ0BGouwWe00YPt2hKJo";
 
-            var options = new CustomerCreateOptions
+            var options = new InvoiceItemCreateOptions
             {
-                Email = email
+                Customer = customerId,
+                Amount = Convert.ToInt64(amount),
+                Currency = "usd",
+                Description = description
             };
-            var service = new CustomerService();
-            Customer customer = service.Create(options);
-            return customer.Id;
+            var service = new InvoiceItemService();
+            InvoiceItem invoiceItem = service.Create(options);
+            return invoiceItem.Id;
         }
     }
 }
