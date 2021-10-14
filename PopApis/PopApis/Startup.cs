@@ -39,6 +39,12 @@ namespace PopApis
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddLogging(logger => logger.AddConsole());
+            services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromSeconds(10);
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
+            });
 
             services.AddAuthentication("BasicAuthentication").
                 AddScheme<AuthenticationSchemeOptions, BasicAuthenticationHandler>("BasicAuthentication", null);
@@ -80,6 +86,7 @@ namespace PopApis
             app.UseStaticFiles();
 
             app.UseRouting();
+            app.UseSession();
 
             app.UseAuthentication();
             app.UseAuthorization();
