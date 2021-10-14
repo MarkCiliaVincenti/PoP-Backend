@@ -17,6 +17,3 @@ BEGIN
 	WHERE AuctionTypeId = 5
 END
 GO
-
-CREATE PROCEDURE [dbo].[GetAllDonationAmounts](@param1 int, @param2 int OUTPUT)
-AS EXTERNAL NAME SomeAssembly.SomeType.SomeMethod
