@@ -7,8 +7,11 @@ using PopLibrary.Helpers;
 using PopLibrary.SqlModels;
 using PopLibrary.Stripe;
 using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Data;
+using Stripe;
+using System.Threading.Tasks;
 using System.Linq;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -217,6 +220,52 @@ namespace PopApis.ApiControllers
                 });
             }
             return "Finalize operation successful";
+        }
+
+        const string endpointSecret = "whsec_j7Fn816sxt8rBFqNbkhaytfrhmY9JhQK";
+        [AllowAnonymous]
+        [HttpPost("webhook")]
+        public async Task<IActionResult> Index()
+        {
+            var json = await new StreamReader(HttpContext.Request.Body).ReadToEndAsync();
+            try
+            {
+                var stripeEvent = EventUtility.ConstructEvent(json,
+                    Request.Headers["Stripe-Signature"], endpointSecret, 300, false);
+
+                // Handle the event
+                if (stripeEvent.Type == Events.PaymentIntentSucceeded)
+                {
+                    Console.WriteLine("hi");
+
+                    PaymentIntent paymentIntent = (PaymentIntent)stripeEvent.Data.Object;
+                    var email = paymentIntent.Customer.Email;
+                    var stripeCustomerId = paymentIntent.Customer.Id;
+                    var amount = paymentIntent.Amount % 100;
+                    var auctionId = "";
+                    paymentIntent.Metadata.TryGetValue("auctionId", out auctionId);
+
+                    var customerId = _sqlAdapter.ExecuteStoredProcedure<int>("dbo.AddOrUpdateCustomer", new List<StoredProcedureParameter>
+                    {
+                        new StoredProcedureParameter { Name="@Email", DbType=SqlDbType.NVarChar, Value=email },
+                        new StoredProcedureParameter { Name="@StripeCustomerId", DbType=SqlDbType.NVarChar, Value=stripeCustomerId },
+                    });
+
+                    _sqlAdapter.ExecuteStoredProcedure<int>("dbo.AddOrUpdatePayment", new List<StoredProcedureParameter>
+                    {
+                        new StoredProcedureParameter { Name="@AuctionId", DbType=SqlDbType.Int, Value=auctionId },
+                        new StoredProcedureParameter { Name="@CustomerId", DbType=SqlDbType.Int, Value=customerId },
+                        new StoredProcedureParameter { Name="@Amount", DbType=SqlDbType.Decimal, Value=amount },
+                    });
+
+                }
+
+                return Ok();
+            }
+            catch (StripeException e)
+            {
+                return BadRequest();
+            }
         }
     }
 }
