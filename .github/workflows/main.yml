@@ -19,14 +19,14 @@ jobs:
         with:
           dotnet-version: '5.0.x'
       - name: Install dependencies
-        run: dotnet restore '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/PopApis.sln'
+        run: dotnet restore PopApis/PopApis.sln
       - name: Build and publish APIs
         run: |
-          dotnet build '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/PopApis.csproj'
-          dotnet publish -c Release -o '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}' 
+          dotnet build'${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/PopApis.csproj' 
+          dotnet publish '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/PopApis.csproj' -o '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}' 
       - name: 'Deploy to Azure WebApp'
         uses: azure/webapps-deploy@0b651ed7546ecfc75024011f76944cb9b381ef1e
         with:
           app-name: PopApis
           publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
-          package: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/myapp
+          package: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
