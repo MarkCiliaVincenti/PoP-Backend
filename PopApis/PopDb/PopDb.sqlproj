@@ -194,6 +194,7 @@
     </Build>
     <Build Include="dbo\Stored Procedures\GetHighestBidForAuctionOfType.sql" />
     <Build Include="dbo\Stored Procedures\AddOrUpdateStripeCustomerId.sql" />
+    <Build Include="dbo\Stored Procedures\AddOrUpdatePayment.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="dbo\Stored Procedures\GetHighestBid.sql" />

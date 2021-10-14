@@ -18,6 +18,7 @@ namespace PopLibrary.Helpers
 
         public void IngestAuctionResultsToPaymentTable(int auctionTypeId)
         {
+            var auctions = _sqlAdapter.ExecuteStoredProcedureAsync<GetAuctionsResult>("dbo.GetAuctions");
             var auctionResults = _sqlAdapter.ExecuteStoredProcedureAsync<GetAuctionBidResult>("dbo.GetHighestBidForAllAuctionsOfType", new List<StoredProcedureParameter>
             {
                 new StoredProcedureParameter { Name="@AuctionTypeId", DbType=SqlDbType.Int, Value=auctionTypeId }
@@ -29,11 +30,17 @@ namespace PopLibrary.Helpers
                 {
                     new StoredProcedureParameter { Name="@Email", DbType=SqlDbType.NVarChar, Value=auctionResult.Email }
                 }).FirstOrDefault();
+                var auctionDescription = auctions
+                    .Where(auction => auctionResult.AuctionId == auction.Id).
+                    Select(a => a.Description)
+                    .FirstOrDefault();
                 _sqlAdapter.ExecuteStoredProcedureAsync("dbo.AddOrUpdatePayment", new List<StoredProcedureParameter>
                 {
                     new StoredProcedureParameter { Name="@AuctionId", DbType=SqlDbType.Int, Value=auctionResult.AuctionId },
                     new StoredProcedureParameter { Name="@CustomerId", DbType=SqlDbType.Int, Value=customer.Id },
-                    new StoredProcedureParameter { Name="@Complete", DbType=SqlDbType.Bit, Value=0 }
+                    new StoredProcedureParameter { Name="@Complete", DbType=SqlDbType.Bit, Value=0 },
+                    new StoredProcedureParameter { Name="@Amount", DbType=SqlDbType.Decimal, Value=auctionResult.Amount },
+                    new StoredProcedureParameter { Name="@Description", DbType=SqlDbType.NVarChar, Value=auctionDescription }
                 });
             }
         }
