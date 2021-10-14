@@ -24,7 +24,7 @@ jobs:
       - name: Install dependencies
         run: dotnet restore PopApis/PopApis.sln
       - name: Build Libraries
-        run: dotnet build PopApis/PopLibrary/PopLibrary
+        run: dotnet build PopApis/PopLibrary/PopLibrary.csproj
       - name: Build APIs
         run: dotnet build PopApis/PopApis/PopApis.csproj
       # - name: 'Deploy to Azure WebApp'
