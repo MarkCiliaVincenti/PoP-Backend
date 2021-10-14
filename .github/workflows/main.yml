@@ -23,8 +23,10 @@ jobs:
         run: ls
       - name: Install dependencies
         run: dotnet restore PopApis/PopApis.sln
-      - name: Build
-        run: dotnet build PopApis/PopApis.sln
+      - name: Build Libraries
+        run: dotnet build PopApis/PopLibrary/PopLibrary
+      - name: Build APIs
+        run: dotnet build PopApis/PopApis/PopApis.csproj
       # - name: 'Deploy to Azure WebApp'
       #   uses: azure/webapps-deploy@0b651ed7546ecfc75024011f76944cb9b381ef1e
       #   with:
