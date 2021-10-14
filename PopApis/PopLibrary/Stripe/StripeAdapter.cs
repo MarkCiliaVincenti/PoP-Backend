@@ -24,11 +24,16 @@ namespace PopLibrary.Stripe
 
         public string GetOrCreateCustomerForEmail(string email)
         {
+            var service = new CustomerService();
+            var customers = service.List();
+            if (customers.Any(c => c.Email == email))
+            {
+                return customers.First(c => c.Email == email).Id;
+            }
             var options = new CustomerCreateOptions
             {
                 Email = email
             };
-            var service = new CustomerService();
             Customer customer = service.Create(options);
             return customer.Id;
         }
@@ -38,7 +43,7 @@ namespace PopLibrary.Stripe
             var options = new InvoiceItemCreateOptions
             {
                 Customer = customerId,
-                Amount = Convert.ToInt64(amount),
+                Amount = Convert.ToInt64(amount) * 100,
                 Currency = "usd",
                 Description = description
             };
@@ -57,8 +62,15 @@ namespace PopLibrary.Stripe
                 Metadata = new Dictionary<string, string> { { "chargeOrigin", "gala" } }
             };
             var service = new InvoiceService();
-            Invoice invoice = service.Create(options);
-            return invoice.Id;
+            try
+            {
+                Invoice invoice = service.Create(options);
+                return invoice.Id;
+            }
+            catch
+            {
+                return "-1";
+            }
         }
     }
 }

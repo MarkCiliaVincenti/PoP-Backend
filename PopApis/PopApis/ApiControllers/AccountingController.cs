@@ -72,7 +72,6 @@ namespace PopApis.ApiControllers
         [HttpPost("finalize")]
         public string PostFinalize([FromBody] string key)
         {
-            // TODO: encrypt
             if (key != _finalizeOptions.FinalizeKey)
             {
                 return "Bad key";
