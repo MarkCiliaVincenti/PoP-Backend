@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using PopApis.Models;
 using PopLibrary;
 using PopLibrary.Helpers;
@@ -8,8 +10,6 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -17,6 +17,7 @@ namespace PopApis.ApiControllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Policy = "Admin")]
     public class AccountingController : ControllerBase
     {
         private readonly FinalizeOptions _finalizeOptions;
@@ -36,36 +37,109 @@ namespace PopApis.ApiControllers
             _stripeAdapter = stripeAdapter;
         }
 
-        // GET: api/<AccountingController>
-        [HttpGet]
-        public IEnumerable<string> Get()
+        // GET api/accounting/info/1
+        /// <summary>
+        /// Returns accounting details for an auction.
+        /// Gets information for auction with ID <paramref name="auctionID"/>.
+        /// </summary>
+        [HttpGet("info")]
+        public AuctionViewModel getAuctionInfoById(int auctionID)
         {
-            return new string[] { "value1", "value2" };
+            var auctionDetails = this.GetAuctionById(auctionID);
+            var auctionHighestBid = this.GetHighestBidByAuctionId(auctionID);
+            return new AuctionViewModel
+            {
+                AuctionId = auctionID,
+                AuctionName = auctionDetails.FirstOrDefault().Title,
+                AuctionTime = auctionDetails.FirstOrDefault().Created,
+                AuctionType = auctionDetails.FirstOrDefault().AuctionTypeId,
+                HighestBid = new BidViewModel
+                {
+                    BidAmount = auctionHighestBid.FirstOrDefault().Amount,
+                    BidId = auctionHighestBid.FirstOrDefault().Id,
+                    GuestId = auctionHighestBid.FirstOrDefault().Email,
+                    PaidStatus = auctionHighestBid.FirstOrDefault().Amount <= 100
+                }
+            };
         }
 
-        // GET api/<AccountingController>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
+        // GET api/accounting/bids
+        // GET api/accounting/bids?startDate=10/13/2021&endDate=10/14/2021
+        /// <summary>
+        /// Returns the total amount from silent and live auctions.
+        /// Returns total of all highest bids between dates <paramref name="startDate"/> and <paramref name="endDate"/>.
+        /// </summary>
+        [HttpGet("bids")]
+        public decimal getTotalBidAmount([FromQuery] DateTime? startDate = null, [FromQuery] DateTime? endDate = null)
         {
-            return "value";
+            var allIds = this.GetAllBidAuctionIDs(startDate, endDate);
+            List<decimal> highestBidAmounts = new();
+            highestBidAmounts.AddRange(allIds.Select(i => this.GetHighestBidByAuctionId(i.Id).FirstOrDefault().Amount));
+            return highestBidAmounts.Sum();
         }
 
-        // POST api/<AccountingController>
-        [HttpPost]
-        public void Post([FromBody] string value)
+        // GET api/accounting/donations
+        // GET api/accounting/donations?startDate=10/13/2021&endDate=10/14/2021
+        /// <summary>
+        /// Returns the total amount from all donations.
+        /// Returns total of donations between dates <paramref name="startDate"/> and <paramref name="endDate"/>.
+        /// </summary>
+        [HttpGet("donations")]
+        public decimal getTotalDonationAmount([FromQuery] DateTime? startDate = null, [FromQuery] DateTime? endDate = null)
         {
+            var allDonationAmounts = this.GetAllDonationAmounts(startDate, endDate);
+            decimal total = 0;
+            var sum = allDonationAmounts.Select(d => total + d.Amount);
+            return total;
         }
 
-        // PUT api/<AccountingController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        // GET api/accounting/total
+        // GET api/accounting/total?startDate=10/13/2021&endDate=10/14/2021
+        /// <summary>
+        /// Returns the total amount from all auctions and donations.
+        /// Returns total amount raised between dates <paramref name="startDate"/> and <paramref name="endDate"/>.
+        /// </summary>
+        [HttpGet("total")]
+        public decimal getTotal([FromQuery] DateTime? startDate = null, [FromQuery] DateTime? endDate = null)
         {
+            return this.getTotalBidAmount(startDate, endDate) + this.getTotalDonationAmount(startDate, endDate);
         }
 
-        // DELETE api/<AccountingController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
+        private IEnumerable<GetAuctionIdResult> GetAllBidAuctionIDs([FromQuery] DateTime? startDate = null, [FromQuery] DateTime? endDate = null)
         {
+            var result = _sqlAdapter.ExecuteStoredProcedure<GetAuctionIdResult>("dbo.GetAllAuctionIDs", new List<StoredProcedureParameter>
+            {
+                new StoredProcedureParameter { Name = "@StartDate", DbType = SqlDbType.DateTime, Value = startDate },
+                new StoredProcedureParameter { Name = "@EndDate", DbType = SqlDbType.DateTime, Value = endDate }
+            });
+            return result;
+        }
+
+        private IEnumerable<GetDonationAmountResult> GetAllDonationAmounts([FromQuery] DateTime? startDate = null, [FromQuery] DateTime? endDate = null)
+        {
+            var result = _sqlAdapter.ExecuteStoredProcedure<GetDonationAmountResult>("dbo.GetAllDonationAmounts", new List<StoredProcedureParameter>
+            {
+                new StoredProcedureParameter { Name = "@StartDate", DbType = SqlDbType.DateTime, Value = startDate },
+                new StoredProcedureParameter { Name = "@EndDate", DbType = SqlDbType.DateTime, Value = endDate }
+            });
+            return result;
+        }
+
+        private IEnumerable<GetAuctionsResult> GetAuctionById(int auctionTypeId)
+        {
+            var result = _sqlAdapter.ExecuteStoredProcedure<GetAuctionsResult>("dbo.GetAuctions", new List<StoredProcedureParameter>
+            {
+                new StoredProcedureParameter { Name="@AuctionTypeId", DbType=SqlDbType.Int, Value=auctionTypeId }
+            });
+            return result;
+        }
+
+        private IEnumerable<GetAuctionBidResult> GetHighestBidByAuctionId(int auctionId)
+        {
+            return _sqlAdapter.ExecuteStoredProcedure<GetAuctionBidResult>("dbo.GetHighestBid", new List<StoredProcedureParameter>
+            {
+                new StoredProcedureParameter { Name="@AuctionId", DbType=SqlDbType.Int, Value=auctionId }
+            });
         }
 
         // POST api/<AccountingController>
@@ -83,18 +157,18 @@ namespace PopApis.ApiControllers
             // 3. Ingest silent auction highest bidders to Payment table
             _finalizeHelper.IngestAuctionResultsToPaymentTable((int)AuctionType.Live);
             // 4. For each customer, update their stripe ID using stripe's returned value
-            var customers = _sqlAdapter.ExecuteStoredProcedureAsync<Customer>("dbo.GetCustomers");
+            var customers = _sqlAdapter.ExecuteStoredProcedure<Customer>("dbo.GetCustomers");
             foreach (var customer in customers)
             {
                 var stripeCustomerId = _stripeAdapter.GetOrCreateCustomerForEmail(customer.Email);
-                _sqlAdapter.ExecuteStoredProcedureAsync("dbo.AddOrUpdateStripeCustomerId", new List<StoredProcedureParameter>
+                _sqlAdapter.ExecuteStoredProcedure("dbo.AddOrUpdateStripeCustomerId", new List<StoredProcedureParameter>
                 {
                     new StoredProcedureParameter { Name = "@CustomerId", DbType = SqlDbType.Int, Value = customer.Id },
                     new StoredProcedureParameter { Name = "@StripeCustomerId", DbType = SqlDbType.NVarChar, Value = stripeCustomerId }
                 });
             }
             // 5. Get payments and create invoice items for each payment that is incomplete, updating the payment row accordingly
-            var incompletePayments = _sqlAdapter.ExecuteStoredProcedureAsync<GetPaymentResult>("dbo.GetPayments")
+            var incompletePayments = _sqlAdapter.ExecuteStoredProcedure<GetPaymentResult>("dbo.GetPayments")
                 .Where(payment => !payment.Complete);
             foreach (var payment in incompletePayments)
             {
@@ -102,7 +176,7 @@ namespace PopApis.ApiControllers
                     payment.StripeCustomerId,
                     payment.Amount,
                     payment.Description);
-                _sqlAdapter.ExecuteStoredProcedureAsync("dbo.AddOrUpdatePayment", new List<StoredProcedureParameter>
+                _sqlAdapter.ExecuteStoredProcedure("dbo.AddOrUpdatePayment", new List<StoredProcedureParameter>
                 {
                     new StoredProcedureParameter { Name = "@PaymentId", DbType = SqlDbType.Int, Value = payment.Id },
                     new StoredProcedureParameter { Name = "@AuctionId", DbType = SqlDbType.Int, Value = payment.AuctionId },
@@ -116,7 +190,7 @@ namespace PopApis.ApiControllers
             }
             // 6. Get all customer unique IDs and create one invoice for each one, saving mapping in dict. Then, updating the payment row accordingly for each.
             Dictionary<string, string> customerToInvoiceMap = new Dictionary<string, string>();
-            var customerStripeIds = (_sqlAdapter.ExecuteStoredProcedureAsync<Customer>("dbo.GetCustomers"))
+            var customerStripeIds = (_sqlAdapter.ExecuteStoredProcedure<Customer>("dbo.GetCustomers"))
                 .Select(customer => customer.StripeCustomerId)
                 .Distinct();
             foreach (var customerStripeId in customerStripeIds)
@@ -125,11 +199,11 @@ namespace PopApis.ApiControllers
                     customerStripeId);
                 customerToInvoiceMap.Add(customerStripeId, invoiceId);
             }
-            var allPayments = _sqlAdapter.ExecuteStoredProcedureAsync<GetPaymentResult>("dbo.GetPayments");
+            var allPayments = _sqlAdapter.ExecuteStoredProcedure<GetPaymentResult>("dbo.GetPayments");
             foreach (var payment in allPayments)
             {
                 var invoiceId = customerToInvoiceMap[payment.StripeCustomerId];
-                _sqlAdapter.ExecuteStoredProcedureAsync("dbo.AddOrUpdatePayment", new List<StoredProcedureParameter>
+                _sqlAdapter.ExecuteStoredProcedure("dbo.AddOrUpdatePayment", new List<StoredProcedureParameter>
                 {
                     new StoredProcedureParameter { Name = "@PaymentId", DbType = SqlDbType.Int, Value = payment.Id },
                     new StoredProcedureParameter { Name = "@AuctionId", DbType = SqlDbType.Int, Value = payment.AuctionId },

@@ -15,7 +15,7 @@ namespace PopLibrary
             _sqlSettings = sqlSettings;
         }
 
-        public List<T> ExecuteStoredProcedureAsync<T>(
+        public List<T> ExecuteStoredProcedure<T>(
             string procedureName,
             IReadOnlyCollection<StoredProcedureParameter> parameters = null)
         {
@@ -44,7 +44,7 @@ namespace PopLibrary
             return ret;
         }
 
-        public void ExecuteStoredProcedureAsync(
+        public void ExecuteStoredProcedure(
             string procedureName,
             IReadOnlyCollection<StoredProcedureParameter> parameters = null)
         {
