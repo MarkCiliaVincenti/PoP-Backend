@@ -11,7 +11,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using PopApis.ApiControllers;
-using PopApis.Data;
 using PopApis.Models;
 using PopLibrary;
 using PopLibrary.Helpers;
@@ -54,7 +53,7 @@ namespace PopApis
                 AddScheme<AuthenticationSchemeOptions, BasicAuthenticationHandler>("BasicAuthentication", null);
 
             services.AddControllersWithViews();
-            services.AddRazorPages();            
+            services.AddRazorPages();
 
             services.AddAuthorization(options =>
             {

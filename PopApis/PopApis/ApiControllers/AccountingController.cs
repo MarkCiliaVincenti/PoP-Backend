@@ -160,7 +160,7 @@ namespace PopApis.ApiControllers
             // 3. Ingest silent auction highest bidders to Payment table
             _finalizeHelper.IngestAuctionResultsToPaymentTable((int)AuctionType.Live);
             // 4. For each customer, update their stripe ID using stripe's returned value
-            var customers = _sqlAdapter.ExecuteStoredProcedure<Customer>("dbo.GetCustomers");
+            var customers = _sqlAdapter.ExecuteStoredProcedure<PopLibrary.SqlModels.Customer>("dbo.GetCustomers");
             foreach (var customer in customers)
             {
                 var stripeCustomerId = _stripeAdapter.GetOrCreateCustomerForEmail(customer.Email);
@@ -193,7 +193,7 @@ namespace PopApis.ApiControllers
             }
             // 6. Get all customer unique IDs and create one invoice for each one, saving mapping in dict. Then, updating the payment row accordingly for each.
             Dictionary<string, string> customerToInvoiceMap = new Dictionary<string, string>();
-            var customerStripeIds = (_sqlAdapter.ExecuteStoredProcedure<Customer>("dbo.GetCustomers"))
+            var customerStripeIds = (_sqlAdapter.ExecuteStoredProcedure<PopLibrary.SqlModels.Customer>("dbo.GetCustomers"))
                 .Select(customer => customer.StripeCustomerId)
                 .Distinct();
             foreach (var customerStripeId in customerStripeIds)
@@ -220,6 +220,37 @@ namespace PopApis.ApiControllers
                 });
             }
             return "Finalize operation successful";
+        }
+
+        // GET api/accounting/pledge
+        /// <summary>
+        /// Puts an incomplete payment in payments table.
+        /// </summary>
+        [HttpPost("pledge")]
+        public string Pledge([FromBody] PledgeBody body)
+        {
+            var customer = _sqlAdapter.ExecuteStoredProcedure<PopLibrary.SqlModels.Customer>("dbo.AddOrUpdateCustomer", new List<StoredProcedureParameter>
+            {
+                new StoredProcedureParameter { Name="@Email", DbType=SqlDbType.NVarChar, Value=body.email }
+            }).FirstOrDefault();
+            _sqlAdapter.ExecuteStoredProcedure("dbo.AddOrUpdatePayment", new List<StoredProcedureParameter>
+            {
+                new StoredProcedureParameter { Name = "@AuctionId", DbType = SqlDbType.Int, Value = body.auctionId },
+                new StoredProcedureParameter { Name = "@CustomerId", DbType = SqlDbType.Int, Value = customer.Id },
+                new StoredProcedureParameter { Name = "@Complete", DbType = SqlDbType.Bit, Value = 0 },
+                new StoredProcedureParameter { Name = "@Amount", DbType = SqlDbType.Decimal, Value = body.amount },
+                new StoredProcedureParameter { Name = "@Description", DbType = SqlDbType.Text, Value = body.description}
+            });
+
+            return $"successfully created pledge for {body.amount}";
+        }
+
+        public class PledgeBody
+        {
+            public string email { get; set; }
+            public decimal amount { get; set; }
+            public int auctionId { get; set; }
+            public string description { get; set; }
         }
 
         const string endpointSecret = "whsec_j7Fn816sxt8rBFqNbkhaytfrhmY9JhQK";
