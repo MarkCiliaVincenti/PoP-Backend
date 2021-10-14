@@ -6,6 +6,8 @@
     [StripeInvoiceItemId] NVARCHAR (500) NULL,
     [StripeInvoiceId]     NVARCHAR (500) NULL,
     [Created]             DATETIME       CONSTRAINT [DF_Payment_Timestamp] DEFAULT (getutcdate()) NOT NULL,
+    [Amount] DECIMAL(18, 2) NULL, 
+    [Description] TEXT NULL, 
     CONSTRAINT [PK_Payment] PRIMARY KEY CLUSTERED ([Id] ASC),
     CONSTRAINT [FK_Payment_Customer] FOREIGN KEY ([CustomerId]) REFERENCES [dbo].[Customer] ([Id])
 );

@@ -6,7 +6,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using PopApis.ApiControllers;
+using PopApis.Models;
 using PopLibrary;
+using PopLibrary.Helpers;
+using PopLibrary.Stripe;
 using PopLibrary.Data;
 using System;
 using System.Security.Claims;
@@ -42,7 +46,7 @@ namespace PopApis
                 AddScheme<AuthenticationSchemeOptions, BasicAuthenticationHandler>("BasicAuthentication", null);
 
             services.AddControllersWithViews();
-            services.AddRazorPages();            
+            services.AddRazorPages();
 
             services.AddAuthorization(options =>
             {
@@ -52,11 +56,20 @@ namespace PopApis
 
             services.Configure<Users>(Configuration.GetSection("Users"));
             services.Configure<SqlSettings>(Configuration.GetSection("ConnectionStrings"));
+            services.Configure<FinalizeOptions>(Configuration.GetSection("FinalizeOptions"));
+            services.Configure<StripeSettings>(Configuration.GetSection("Stripe"));
             services.AddSingleton(sp => sp.GetService<IOptions<Users>>().Value);
             services.AddSingleton(sp => sp.GetService<IOptions<SqlSettings>>().Value);
+            services.AddSingleton(sp => sp.GetService<IOptions<FinalizeOptions>>().Value);
+            services.AddSingleton(sp => sp.GetService<IOptions<StripeSettings>>().Value);
             services.AddScoped<SqlAdapter>();
+            services.AddScoped<AuctionData>();
             services.AddScoped<EventData>();
             services.AddScoped<AuctionController>();
+            services.AddScoped<AccountingController>();
+            services.AddScoped<FinalizeHelper>();
+            services.AddHttpClient();
+            services.AddSingleton<StripeAdapter>();
             services.AddScoped<PopLibrary.IAuthenticationService, PopLibrary.AuthenticationService>();
         }
 
