@@ -3,4 +3,5 @@
     ViewData["Title"] = "Admin Tasks";
 }
 
+<input type="button" value="Manage Auctions" onclick="@("window.location.href='" + @Url.Action("Index", "Auctions") + "'");" />
 <input type="button" value="Manage Events" onclick="@("window.location.href='" + @Url.Action("Index", "Events") + "'");" />

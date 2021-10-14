@@ -63,6 +63,7 @@ namespace PopApis
             services.AddSingleton(sp => sp.GetService<IOptions<Users>>().Value);
             services.AddSingleton(sp => sp.GetService<IOptions<SqlSettings>>().Value);
             services.AddScoped<SqlAdapter>();
+            services.AddScoped<AuctionData>();
             services.AddScoped<EventData>();
             services.AddScoped<AuctionController>();
             services.AddScoped<PopLibrary.IAuthenticationService, PopLibrary.AuthenticationService>();
