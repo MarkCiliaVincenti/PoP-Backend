@@ -54,7 +54,7 @@ namespace PopApis.ApiControllers
         /// Returns total of all highest bids between dates <paramref name="startDate"/> and <paramref name="endDate"/>.
         /// </summary>
         [HttpGet("bids")]
-        public decimal getTotalBidAmount([FromQuery] DateTime startDate, [FromQuery] DateTime endDate)
+        public decimal getTotalBidAmount([FromQuery] DateTime? startDate = null, [FromQuery] DateTime? endDate = null)
         {
             var allIds = this.GetAllBidAuctionIDs(startDate, endDate);
             List<decimal> highestBidAmounts = new();
@@ -69,7 +69,7 @@ namespace PopApis.ApiControllers
         /// Returns total of donations between dates <paramref name="startDate"/> and <paramref name="endDate"/>.
         /// </summary>
         [HttpGet("donations")]
-        public decimal getTotalDonationAmount([FromQuery] DateTime startDate, [FromQuery] DateTime endDate)
+        public decimal getTotalDonationAmount([FromQuery] DateTime? startDate = null, [FromQuery] DateTime? endDate = null)
         {
             var allDonationAmounts = this.GetAllDonationAmounts(startDate, endDate);
             decimal total = 0;
@@ -84,7 +84,7 @@ namespace PopApis.ApiControllers
         /// Returns total amount raised between dates <paramref name="startDate"/> and <paramref name="endDate"/>.
         /// </summary>
         [HttpGet("total")]
-        public decimal getTotal([FromQuery] DateTime startDate, [FromQuery] DateTime endDate)
+        public decimal getTotal([FromQuery] DateTime? startDate = null, [FromQuery] DateTime? endDate = null)
         {
             return this.getTotalBidAmount(startDate, endDate) + this.getTotalDonationAmount(startDate, endDate);
         }
@@ -99,7 +99,7 @@ namespace PopApis.ApiControllers
             return result;
         }
     
-        private IEnumerable<GetDonationAmountResult> GetAllDonationAmounts([FromQuery] DateTime startDate, [FromQuery] DateTime endDate)
+        private IEnumerable<GetDonationAmountResult> GetAllDonationAmounts([FromQuery] DateTime? startDate = null, [FromQuery] DateTime? endDate = null)
         {
             var result = _sqlAdapter.ExecuteStoredProcedure<GetDonationAmountResult>("dbo.GetAllDonationAmounts", new List<StoredProcedureParameter>
             {
