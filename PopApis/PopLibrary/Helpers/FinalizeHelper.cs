@@ -18,15 +18,15 @@ namespace PopLibrary.Helpers
 
         public void IngestAuctionResultsToPaymentTable(int auctionTypeId)
         {
-            var auctions = _sqlAdapter.ExecuteStoredProcedureAsync<GetAuctionsResult>("dbo.GetAuctions");
-            var auctionResults = _sqlAdapter.ExecuteStoredProcedureAsync<GetAuctionBidResult>("dbo.GetHighestBidForAllAuctionsOfType", new List<StoredProcedureParameter>
+            var auctions = _sqlAdapter.ExecuteStoredProcedure<GetAuctionsResult>("dbo.GetAuctions");
+            var auctionResults = _sqlAdapter.ExecuteStoredProcedure<GetAuctionBidResult>("dbo.GetHighestBidForAllAuctionsOfType", new List<StoredProcedureParameter>
             {
                 new StoredProcedureParameter { Name="@AuctionTypeId", DbType=SqlDbType.Int, Value=auctionTypeId }
             });
             foreach (var auctionResult in auctionResults)
             {
                 // Check customers table, if no customer, create one
-                var customer = _sqlAdapter.ExecuteStoredProcedureAsync<Customer>("dbo.AddOrUpdateCustomer", new List<StoredProcedureParameter>
+                var customer = _sqlAdapter.ExecuteStoredProcedure<Customer>("dbo.AddOrUpdateCustomer", new List<StoredProcedureParameter>
                 {
                     new StoredProcedureParameter { Name="@Email", DbType=SqlDbType.NVarChar, Value=auctionResult.Email }
                 }).FirstOrDefault();
@@ -34,7 +34,7 @@ namespace PopLibrary.Helpers
                     .Where(auction => auctionResult.AuctionId == auction.Id).
                     Select(a => a.Description)
                     .FirstOrDefault();
-                _sqlAdapter.ExecuteStoredProcedureAsync("dbo.AddOrUpdatePayment", new List<StoredProcedureParameter>
+                _sqlAdapter.ExecuteStoredProcedure("dbo.AddOrUpdatePayment", new List<StoredProcedureParameter>
                 {
                     new StoredProcedureParameter { Name="@AuctionId", DbType=SqlDbType.Int, Value=auctionResult.AuctionId },
                     new StoredProcedureParameter { Name="@CustomerId", DbType=SqlDbType.Int, Value=customer.Id },
