@@ -50,9 +50,11 @@ namespace PopApis
             services.Configure<Users>(Configuration.GetSection("Users"));
             services.Configure<SqlSettings>(Configuration.GetSection("ConnectionStrings"));
             services.Configure<FinalizeOptions>(Configuration.GetSection("FinalizeOptions"));
+            services.Configure<StripeSettings>(Configuration.GetSection("Stripe"));
             services.AddSingleton(sp => sp.GetService<IOptions<Users>>().Value);
             services.AddSingleton(sp => sp.GetService<IOptions<SqlSettings>>().Value);
             services.AddSingleton(sp => sp.GetService<IOptions<FinalizeOptions>>().Value);
+            services.AddSingleton(sp => sp.GetService<IOptions<StripeSettings>>().Value);
             services.AddScoped<SqlAdapter>();
             services.AddScoped<AuctionController>();
             services.AddScoped<AccountingController>();

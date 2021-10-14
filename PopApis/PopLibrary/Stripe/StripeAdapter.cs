@@ -11,16 +11,19 @@ namespace PopLibrary.Stripe
     public class StripeAdapter
     {
         private readonly HttpClient _httpClient;
+        private readonly StripeSettings _stripeSettings;
+
         public StripeAdapter(
-            IHttpClientFactory httpClientFactory)
+            IHttpClientFactory httpClientFactory,
+            StripeSettings stripeSettings)
         {
             _httpClient = httpClientFactory.CreateClient();
+            _stripeSettings = stripeSettings;
+            StripeConfiguration.ApiKey = stripeSettings.Key;
         }
 
         public string GetOrCreateCustomerForEmail(string email)
         {
-            StripeConfiguration.ApiKey = "sk_test_51JkGVHDElXhh7M42Fo8vSv9bozntSKa458CzLF1dnnaM92t3oVgsLW8Sial62Ra5t1Z6UqN7T1AAcIMQ0BGouwWe00YPt2hKJo";
-
             var options = new CustomerCreateOptions
             {
                 Email = email
@@ -32,8 +35,6 @@ namespace PopLibrary.Stripe
 
         public string GetOrCreateInvoiceItem(string customerId, decimal amount, string description)
         {
-            StripeConfiguration.ApiKey = "sk_test_51JkGVHDElXhh7M42Fo8vSv9bozntSKa458CzLF1dnnaM92t3oVgsLW8Sial62Ra5t1Z6UqN7T1AAcIMQ0BGouwWe00YPt2hKJo";
-
             var options = new InvoiceItemCreateOptions
             {
                 Customer = customerId,
