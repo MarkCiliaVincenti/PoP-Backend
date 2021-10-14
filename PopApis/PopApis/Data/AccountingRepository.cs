@@ -4,7 +4,6 @@ using PopApis.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 
 namespace PopApis.Data
@@ -48,7 +47,7 @@ namespace PopApis.Data
         {
             var allIds = _accountingController.GetAllBidAuctionIDs(startDate, endDate);
             List<decimal> highestBidAmounts = new();
-            highestBidAmounts.AddRange(allIds.Select(i => _auctionController.GetHighestBidOnAuction(i).FirstOrDefault().Amount));
+            highestBidAmounts.AddRange(allIds.Select(i => _auctionController.GetHighestBidOnAuction(i.Id).FirstOrDefault().Amount));
             return highestBidAmounts.Sum();
         }
 
@@ -56,7 +55,9 @@ namespace PopApis.Data
         public decimal getTotalDonationAmount(DateTime startDate, DateTime endDate)
         {
             var allDonationAmounts = _accountingController.GetAllDonationAmounts(startDate, endDate);
-            return allDonationAmounts.Sum();            
+            decimal total = 0;
+            var sum = allDonationAmounts.Select(d => total + d.Amount);
+            return total;
         }
 
         /// <inheritdoc/>
