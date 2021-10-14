@@ -94,7 +94,8 @@ namespace PopApis.ApiControllers
                     new StoredProcedureParameter { Name = "@StripeCustomerId", DbType = SqlDbType.NVarChar, Value = stripeCustomerId }
                 });
             }
-
+            // 5. Get payments and create invoice items for each payment, updating the payment row accordingly
+            // 6. Get all customer unique IDs and create one invoice for each one, saving mapping in dict. Then, updating the payment row accordingly for each.
             return "Finalize operation successful";
         }
     }
