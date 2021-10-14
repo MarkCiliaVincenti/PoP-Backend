@@ -1,7 +1,7 @@
 on:
   push:
     branches:
-      - deploy
+      - main
 
 env:
   AZURE_WEBAPP_PACKAGE_PATH: 'PopApis/PopApis'
