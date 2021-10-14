@@ -19,10 +19,12 @@ jobs:
         uses: actions/setup-dotnet@v1.7.2
         with:
           dotnet-version: '5.0.x'
+      - name: xyz
+        run: pwd
       - name: Install dependencies
-        run: dotnet restore PopApis/Popapis.sln
+        run: dotnet restore PopApis/PopApis.sln
       - name: Build
-        run: dotnet build PopApis/Popapis.sln
+        run: dotnet build PopApis/PopApis.sln
       # - name: 'Deploy to Azure WebApp'
       #   uses: azure/webapps-deploy@0b651ed7546ecfc75024011f76944cb9b381ef1e
       #   with:
