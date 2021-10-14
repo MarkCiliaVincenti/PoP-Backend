@@ -20,7 +20,7 @@ jobs:
         with:
           dotnet-version: '5.0.x'
       - name: xyz
-        run: pwd
+        run: ls
       - name: Install dependencies
         run: dotnet restore PopApis/PopApis.sln
       - name: Build
