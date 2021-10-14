@@ -24,7 +24,7 @@ jobs:
       - name: Build and publish APIs
         run: |
           dotnet build PopApis/PopApis/PopApis.csproj
-          dotnet publish -c Release -o '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/myapp' 
+          dotnet publish -c Release -o '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/PopApis.csproj' 
       - name: 'Deploy to Azure WebApp'
         uses: azure/webapps-deploy@0b651ed7546ecfc75024011f76944cb9b381ef1e
         with:
