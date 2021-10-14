@@ -33,7 +33,7 @@ namespace PopLibrary.Stripe
             return customer.Id;
         }
 
-        public string GetOrCreateInvoiceItem(string customerId, decimal amount, string description)
+        public string CreateInvoiceItem(string customerId, decimal amount, string description)
         {
             var options = new InvoiceItemCreateOptions
             {
@@ -45,6 +45,20 @@ namespace PopLibrary.Stripe
             var service = new InvoiceItemService();
             InvoiceItem invoiceItem = service.Create(options);
             return invoiceItem.Id;
+        }
+
+        public string CreateInvoice(string customerId)
+        {
+            var options = new InvoiceCreateOptions
+            {
+                Customer = customerId,
+                CollectionMethod = "send_invoice",
+                DaysUntilDue = 7,
+                Metadata = new Dictionary<string, string> { { "chargeOrigin", "gala" } }
+            };
+            var service = new InvoiceService();
+            Invoice invoice = service.Create(options);
+            return invoice.Id;
         }
     }
 }

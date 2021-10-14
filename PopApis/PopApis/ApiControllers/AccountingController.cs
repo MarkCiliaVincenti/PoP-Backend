@@ -95,15 +95,54 @@ namespace PopApis.ApiControllers
                 });
             }
             // 5. Get payments and create invoice items for each payment that is incomplete, updating the payment row accordingly
-            var payments = _sqlAdapter.ExecuteStoredProcedureAsync<GetPaymentResult>("dbo.GetPayments");
-            foreach (var payment in payments)
+            var incompletePayments = _sqlAdapter.ExecuteStoredProcedureAsync<GetPaymentResult>("dbo.GetPayments")
+                .Where(payment => !payment.Complete);
+            foreach (var payment in incompletePayments)
             {
-                _stripeAdapter.GetOrCreateInvoiceItem(
+                var invoiceItemId = _stripeAdapter.CreateInvoiceItem(
                     payment.StripeCustomerId,
                     payment.Amount,
                     payment.Description);
+                _sqlAdapter.ExecuteStoredProcedureAsync("dbo.AddOrUpdatePayment", new List<StoredProcedureParameter>
+                {
+                    new StoredProcedureParameter { Name = "@PaymentId", DbType = SqlDbType.Int, Value = payment.Id },
+                    new StoredProcedureParameter { Name = "@AuctionId", DbType = SqlDbType.Int, Value = payment.AuctionId },
+                    new StoredProcedureParameter { Name = "@CustomerId", DbType = SqlDbType.Int, Value = payment.CustomerId },
+                    new StoredProcedureParameter { Name = "@Complete", DbType = SqlDbType.Bit, Value = payment.Complete },
+                    new StoredProcedureParameter { Name = "@StripeInvoiceItemId", DbType = SqlDbType.NVarChar, Value = invoiceItemId },
+                    new StoredProcedureParameter { Name = "@Created", DbType = SqlDbType.DateTime, Value = payment.Created },
+                    new StoredProcedureParameter { Name = "@Amount", DbType = SqlDbType.Decimal, Value = payment.Amount },
+                    new StoredProcedureParameter { Name = "@Description", DbType = SqlDbType.Text, Value = payment.Description}
+                });
             }
             // 6. Get all customer unique IDs and create one invoice for each one, saving mapping in dict. Then, updating the payment row accordingly for each.
+            Dictionary<string, string> customerToInvoiceMap = new Dictionary<string, string>();
+            var customerStripeIds = (_sqlAdapter.ExecuteStoredProcedureAsync<Customer>("dbo.GetCustomers"))
+                .Select(customer => customer.StripeCustomerId)
+                .Distinct();
+            foreach (var customerStripeId in customerStripeIds)
+            {
+                var invoiceId = _stripeAdapter.CreateInvoice(
+                    customerStripeId);
+                customerToInvoiceMap.Add(customerStripeId, invoiceId);
+            }
+            var allPayments = _sqlAdapter.ExecuteStoredProcedureAsync<GetPaymentResult>("dbo.GetPayments");
+            foreach (var payment in allPayments)
+            {
+                var invoiceId = customerToInvoiceMap[payment.StripeCustomerId];
+                _sqlAdapter.ExecuteStoredProcedureAsync("dbo.AddOrUpdatePayment", new List<StoredProcedureParameter>
+                {
+                    new StoredProcedureParameter { Name = "@PaymentId", DbType = SqlDbType.Int, Value = payment.Id },
+                    new StoredProcedureParameter { Name = "@AuctionId", DbType = SqlDbType.Int, Value = payment.AuctionId },
+                    new StoredProcedureParameter { Name = "@CustomerId", DbType = SqlDbType.Int, Value = payment.CustomerId },
+                    new StoredProcedureParameter { Name = "@Complete", DbType = SqlDbType.Bit, Value = payment.Complete },
+                    new StoredProcedureParameter { Name = "@StripeInvoiceItemId", DbType = SqlDbType.NVarChar, Value = payment.StripeInvoiceItemId },
+                    new StoredProcedureParameter { Name = "@StripeInvoiceId", DbType = SqlDbType.NVarChar, Value = invoiceId },
+                    new StoredProcedureParameter { Name = "@Created", DbType = SqlDbType.DateTime, Value = payment.Created },
+                    new StoredProcedureParameter { Name = "@Amount", DbType = SqlDbType.Decimal, Value = payment.Amount },
+                    new StoredProcedureParameter { Name = "@Description", DbType = SqlDbType.Text, Value = payment.Description}
+                });
+            }
             return "Finalize operation successful";
         }
     }
