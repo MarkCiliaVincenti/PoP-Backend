@@ -3,9 +3,6 @@ on:
     branches:
       - deploy
 
-env:
-  AZURE_WEBAPP_NAME: pencilsofpromise   # set this to your application's name
-  AZURE_WEBAPP_PACKAGE_PATH: 'PopApis\PopApis\PopApis.csproj'      # set this to the path to your web app project, defaults to the repository root
 
 jobs:
   build-and-deploy:
@@ -15,17 +12,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Setup .NET Core SDK 5.0
-        uses: actions/setup-dotnet@v1.7.2
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: 5.0
-      - name: Install dependencies
-        run: dotnet restore
-      - name: Build
-        run: dotnet build --configuration Release --no-restore
-      - name: 'Deploy to Azure WebApp'
-        uses: azure/webapps-deploy@0b651ed7546ecfc75024011f76944cb9b381ef1e
-        with:
-          app-name: ${{ env.AZURE_WEBAPP_NAME }}
-          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
-          package: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
+          dotnet-version: '5.0.x'
