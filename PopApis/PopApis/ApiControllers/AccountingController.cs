@@ -77,12 +77,23 @@ namespace PopApis.ApiControllers
             {
                 return "Bad key";
             }
-            _stripeAdapter.GetX();
+
             // 1. All outstanding donations already in Payment table
             // 2. Ingest silent auction highest bidders to Payment table
             _finalizeHelper.IngestAuctionResultsToPaymentTable((int)AuctionType.Silent);
             // 3. Ingest silent auction highest bidders to Payment table
             _finalizeHelper.IngestAuctionResultsToPaymentTable((int)AuctionType.Live);
+            // 4. For each customer, update their stripe ID using stripe's returned value
+            var customers = _sqlAdapter.ExecuteStoredProcedureAsync<Customer>("dbo.GetCustomers");
+            foreach (var customer in customers)
+            {
+                var stripeCustomerId = _stripeAdapter.GetOrCreateCustomerForEmail(customer.Email);
+                _sqlAdapter.ExecuteStoredProcedureAsync("dbo.AddOrUpdateStripeCustomerId", new List<StoredProcedureParameter>
+                {
+                    new StoredProcedureParameter { Name = "@CustomerId", DbType = SqlDbType.Int, Value = customer.Id },
+                    new StoredProcedureParameter { Name = "@StripeCustomerId", DbType = SqlDbType.NVarChar, Value = stripeCustomerId }
+                });
+            }
 
             return "Finalize operation successful";
         }

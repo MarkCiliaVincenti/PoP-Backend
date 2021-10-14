@@ -25,14 +25,14 @@ namespace PopLibrary.Helpers
             foreach (var auctionResult in auctionResults)
             {
                 // Check customers table, if no customer, create one
-                var customerId = _sqlAdapter.ExecuteStoredProcedureAsync<int>("dbo.AddOrUpdateCustomer", new List<StoredProcedureParameter>
+                var customer = _sqlAdapter.ExecuteStoredProcedureAsync<Customer>("dbo.AddOrUpdateCustomer", new List<StoredProcedureParameter>
                 {
                     new StoredProcedureParameter { Name="@Email", DbType=SqlDbType.NVarChar, Value=auctionResult.Email }
                 }).FirstOrDefault();
                 _sqlAdapter.ExecuteStoredProcedureAsync("dbo.AddOrUpdatePayment", new List<StoredProcedureParameter>
                 {
                     new StoredProcedureParameter { Name="@AuctionId", DbType=SqlDbType.Int, Value=auctionResult.AuctionId },
-                    new StoredProcedureParameter { Name="@CustomerId", DbType=SqlDbType.Int, Value=customerId },
+                    new StoredProcedureParameter { Name="@CustomerId", DbType=SqlDbType.Int, Value=customer.Id },
                     new StoredProcedureParameter { Name="@Complete", DbType=SqlDbType.Bit, Value=0 }
                 });
             }

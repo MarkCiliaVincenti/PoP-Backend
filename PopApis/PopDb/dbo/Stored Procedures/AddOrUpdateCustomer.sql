@@ -11,7 +11,7 @@ CREATE PROCEDURE [dbo].[AddOrUpdateCustomer]
 AS
 BEGIN
 
-   IF @CustomerId IS NULL
+   IF @CustomerId IS NULL AND @Email IS NULL
    BEGIN
 	   INSERT INTO [dbo].[Customer]
 			   ([Email]
