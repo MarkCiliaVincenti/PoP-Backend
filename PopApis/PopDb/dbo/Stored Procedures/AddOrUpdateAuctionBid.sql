@@ -1,7 +1,6 @@
-﻿
-
-CREATE PROCEDURE [dbo].[AddOrUpdateAuctionBid]
+﻿CREATE PROCEDURE [dbo].[AddOrUpdateAuctionBid]
 (
+    @Id INT=NULL,
 	@AuctionId INT,
     @Amount DECIMAL(18,2),
 	@Email NVARCHAR(100),
@@ -9,9 +8,22 @@ CREATE PROCEDURE [dbo].[AddOrUpdateAuctionBid]
 )
 AS
 BEGIN
+   IF @Id IS NULL OR @Id = -1
+   BEGIN
+		INSERT INTO [dbo].[AuctionBid]
+				   ([AuctionId]
+				   ,[Amount]
+				   ,[Email]
+				   ,[Timestamp])
+			 VALUES
+				   (@AuctionId
+				   ,@Amount
+				   ,@Email
+				   ,GETUTCDATE())
+	END
    IF NOT EXISTS (
-		SELECT TOP 1 1 
-		FROM dbo.AuctionBid WITH (NOLOCK) 
+		SELECT TOP 1 1
+		FROM dbo.AuctionBid WITH (NOLOCK)
 		WHERE AuctionId = @AuctionId AND Email = @Email
 	)
    BEGIN
@@ -32,15 +44,17 @@ BEGIN
 		UPDATE [dbo].[AuctionBid]
 		 SET [Amount] = @Amount
 		,[Timestamp] = COALESCE(@Timestamp, GETUTCDATE())
-		WHERE 
+		WHERE
 			AuctionId = @AuctionId	AND Email = @Email
-	END 
+	END
 	BEGIN
 	 -- Update the bid amount for for an auction
 		UPDATE [dbo].[Auction]
 		 SET [Amount] = @Amount
 		,[Created] = COALESCE(@Timestamp, GETUTCDATE())
-		WHERE 
+		WHERE
 			Id = @AuctionId
-	END 
+	END
    END
+
+GO
