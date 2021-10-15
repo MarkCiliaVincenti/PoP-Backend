@@ -298,6 +298,7 @@ namespace PopApis.ApiControllers
                     {
                         new StoredProcedureParameter { Name="@AuctionId", DbType=SqlDbType.Int, Value=auctionIdInt },
                         new StoredProcedureParameter { Name="@CustomerId", DbType=SqlDbType.Int, Value=customerId },
+                        new StoredProcedureParameter { Name="@Complete", DbType=SqlDbType.Bit, Value=1 },
                         new StoredProcedureParameter { Name="@Amount", DbType=SqlDbType.Decimal, Value=amount },
                     });
 
