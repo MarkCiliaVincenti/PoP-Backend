@@ -302,8 +302,14 @@ namespace PopApis.ApiControllers
                         return BadRequest();
                     }
 
-                    var email = paymentIntent.Customer.Email;
-                    var stripeCustomerId = paymentIntent.Customer.Id;
+
+                    var email = "";
+                    var stripeCustomerId = "";
+                    if (paymentIntent.Customer != null)
+                    {
+                        email = paymentIntent.Customer.Email;
+                        stripeCustomerId = paymentIntent.Customer.Id;
+                    }
                     var amount = paymentIntent.Amount % 100;
                     string auctionId = "";
                     int auctionIdInt;
@@ -317,18 +323,19 @@ namespace PopApis.ApiControllers
                         auctionIdInt = int.Parse(auctionId);
                     }
 
-                    var customerId = _sqlAdapter.ExecuteStoredProcedure<int>("dbo.AddOrUpdateCustomer", new List<StoredProcedureParameter>
+                    var customer = _sqlAdapter.ExecuteStoredProcedure<PopLibrary.SqlModels.Customer>("dbo.AddOrUpdateCustomer", new List<StoredProcedureParameter>
                     {
                         new StoredProcedureParameter { Name="@Email", DbType=SqlDbType.NVarChar, Value=email },
                         new StoredProcedureParameter { Name="@StripeCustomerId", DbType=SqlDbType.NVarChar, Value=stripeCustomerId },
-                    });
+                    }).FirstOrDefault();
 
-                    _sqlAdapter.ExecuteStoredProcedure<int>("dbo.AddOrUpdatePayment", new List<StoredProcedureParameter>
+                    _sqlAdapter.ExecuteStoredProcedure("dbo.AddOrUpdatePayment", new List<StoredProcedureParameter>
                     {
                         new StoredProcedureParameter { Name="@AuctionId", DbType=SqlDbType.Int, Value=auctionIdInt },
-                        new StoredProcedureParameter { Name="@CustomerId", DbType=SqlDbType.Int, Value=customerId },
+                        new StoredProcedureParameter { Name="@CustomerId", DbType=SqlDbType.Int, Value=customer.Id },
                         new StoredProcedureParameter { Name="@Complete", DbType=SqlDbType.Bit, Value=1 },
                         new StoredProcedureParameter { Name="@Amount", DbType=SqlDbType.Decimal, Value=amount },
+                        new StoredProcedureParameter { Name ="@Description", DbType = SqlDbType.Text, Value = "Gala Donation"},
                     });
 
                 }
