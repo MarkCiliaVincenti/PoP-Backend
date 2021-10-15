@@ -1,0 +1,31 @@
+﻿CREATE PROCEDURE [dbo].[GetHighestBidForAllAuctionsOfType]
+(
+    @AuctionTypeId INT = NULL
+)
+AS
+BEGIN
+    -- SET NOCOUNT ON added to prevent extra result sets from
+    -- interfering with SELECT statements.
+    SET NOCOUNT ON
+
+    SELECT
+    Sub2.Id AS Id,
+    Sub1.AuctionId,
+    Sub1.MaxBid AS Amount,
+    Sub2.Email,
+    Sub2.Timestamp
+    FROM
+    (
+        SELECT Main.AuctionId, MAX(Main.Amount) AS MaxBid
+        FROM
+        (
+        SELECT A.Id AS AuctionId, AB.Email, AB.Amount FROM dbo.Auction AS A WITH (NOLOCK)
+            INNER JOIN dbo.AuctionBid AS AB WITH (NOLOCK) ON A.Id = AB.AuctionId
+            WHERE A.AuctionTypeId = @AuctionTypeId
+        ) Main
+        GROUP BY Main.AuctionId
+    ) Sub1
+    INNER JOIN
+    dbo.AuctionBid AS Sub2 ON Sub1.MaxBid = Sub2.Amount AND Sub1.AuctionId = Sub2.AuctionId
+END
+GO
