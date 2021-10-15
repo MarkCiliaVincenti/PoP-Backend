@@ -11,9 +11,9 @@ BEGIN
     SET NOCOUNT ON
 
     -- Insert statements for procedure here
-    SELECT SUM(Payment.Amount) AS Amount
+    SELECT ISNULL(SUM(Payment.Amount), 0) AS Amount
 	FROM dbo.Auction INNER JOIN dbo.Payment WITH (NOLOCK)
 	ON Payment.AuctionId = Auction.Id
-	WHERE AuctionTypeId = 5
+	WHERE AuctionTypeId = 5 OR AuctionTypeId = 1
 END
 GO

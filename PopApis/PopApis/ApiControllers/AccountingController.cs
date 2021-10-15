@@ -77,7 +77,12 @@ namespace PopApis.ApiControllers
         {
             var allIds = this.GetAllBidAuctionIDs(startDate, endDate);
             List<decimal> highestBidAmounts = new();
-            highestBidAmounts.AddRange(allIds.Select(i => this.GetHighestBidByAuctionId(i.Id).FirstOrDefault().Amount));
+            highestBidAmounts.AddRange(allIds
+                .Select(x =>
+                {
+                    var highestBid = this.GetHighestBidByAuctionId(x.Id);
+                    return highestBid.Any() ? highestBid.First().Amount : System.Convert.ToDecimal(0);
+                }));
             return highestBidAmounts.Sum();
         }
 
@@ -235,7 +240,7 @@ namespace PopApis.ApiControllers
             }).FirstOrDefault();
             _sqlAdapter.ExecuteStoredProcedure("dbo.AddOrUpdatePayment", new List<StoredProcedureParameter>
             {
-                new StoredProcedureParameter { Name = "@AuctionId", DbType = SqlDbType.Int, Value = body.auctionId },
+                new StoredProcedureParameter { Name = "@AuctionId", DbType = SqlDbType.Int, Value = 5 },
                 new StoredProcedureParameter { Name = "@CustomerId", DbType = SqlDbType.Int, Value = customer.Id },
                 new StoredProcedureParameter { Name = "@Complete", DbType = SqlDbType.Bit, Value = 0 },
                 new StoredProcedureParameter { Name = "@Amount", DbType = SqlDbType.Decimal, Value = body.amount },
