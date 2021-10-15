@@ -310,18 +310,12 @@ namespace PopApis.ApiControllers
                         return BadRequest();
                     }
 
-
-                    var email = "";
-                    var stripeCustomerId = "";
-                    if (paymentIntent.Customer != null)
-                    {
-                        email = paymentIntent.Customer.Email;
-                        stripeCustomerId = paymentIntent.Customer.Id;
-                    }
-                    var amount = paymentIntent.Amount % 100;
+                    var stripeCustomerId = paymentIntent.CustomerId;
+                    var email = paymentIntent.ReceiptEmail;
+                    var amount = paymentIntent.Amount / 100;
                     string auctionId = "";
                     int auctionIdInt;
-                    paymentIntent.Metadata.TryGetValue("auctionId", out auctionId);
+                    paymentIntent.Metadata.TryGetValue("auction_id", out auctionId);
                     if (string.IsNullOrEmpty(auctionId))
                     {
                         auctionIdInt = 0;
