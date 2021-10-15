@@ -197,6 +197,8 @@
     <Build Include="dbo\Stored Procedures\AddOrUpdatePayment.sql" />
     <Build Include="dbo\Stored Procedures\GetPayments.sql" />
     <Build Include="dbo\Stored Procedures\GetAllDonationAmounts.sql" />
+    <Build Include="dbo\Stored Procedures\GetBids.sql" />
+    <Build Include="dbo\Stored Procedures\DeleteAuctionBid.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="dbo\Stored Procedures\GetHighestBid.sql" />
