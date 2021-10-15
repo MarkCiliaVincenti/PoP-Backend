@@ -71,6 +71,7 @@ namespace PopApis
             services.AddSingleton(sp => sp.GetService<IOptions<StripeSettings>>().Value);
             services.AddScoped<SqlAdapter>();
             services.AddScoped<AuctionData>();
+            services.AddScoped<AuctionBidData>();
             services.AddScoped<EventData>();
             services.AddScoped<AuctionController>();
             services.AddScoped<AccountingController>();
