@@ -297,7 +297,7 @@ namespace PopApis.ApiControllers
                 {
                     PaymentIntent paymentIntent = (PaymentIntent)stripeEvent.Data.Object;
 
-                    if (string.IsNullOrEmpty(paymentIntent.InvoiceId))
+                    if (!string.IsNullOrEmpty(paymentIntent.InvoiceId))
                     {
                         return BadRequest();
                     }
