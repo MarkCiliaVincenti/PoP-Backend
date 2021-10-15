@@ -7,7 +7,7 @@ namespace PopApis.Controllers
 {
     public class PaymentController : Controller
     {
-        private PaymentData _data; //todo tiara make payment data
+        private PaymentData _data;
 
         public PaymentController(PaymentData data)
         {

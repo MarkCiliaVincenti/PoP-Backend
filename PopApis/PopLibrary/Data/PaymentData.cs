@@ -15,7 +15,7 @@ namespace PopLibrary.Data
 
         public IEnumerable<Payment> GetPayments()
         {
-            return _sqlAdapter.ExecuteStoredProcedure<Payment>("dbo.GetPayments"); //todo tiara stored proc
+            return _sqlAdapter.ExecuteStoredProcedure<Payment>("dbo.GetPayments");
         }
 
         public void AddOrUpdatePayment(Payment itemToUpdate)
@@ -39,7 +39,7 @@ namespace PopLibrary.Data
                 }
             );
 
-            _sqlAdapter.ExecuteStoredProcedure<int>("dbo.AddOrUpdatePayment", parameters); //todo tiara stored proc
+            _sqlAdapter.ExecuteStoredProcedure<int>("dbo.AddOrUpdatePayment", parameters);
         }
 
         public void DeletePayment(int paymentId)
@@ -48,7 +48,7 @@ namespace PopLibrary.Data
                 new StoredProcedureParameter { Name = "@PaymentId", DbType = SqlDbType.Int, Value = paymentId }
             };
 
-            _sqlAdapter.ExecuteStoredProcedure<int>("dbo.DeletePayment", parameters); //todo tiara stored proc
+            _sqlAdapter.ExecuteStoredProcedure<int>("dbo.DeletePayment", parameters);
         }
     }
 }
