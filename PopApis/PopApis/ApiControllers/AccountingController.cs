@@ -337,7 +337,7 @@ namespace PopApis.ApiControllers
             }
             catch (StripeException e)
             {
-                return BadRequest();
+                return BadRequest(e);
             }
         }
     }
