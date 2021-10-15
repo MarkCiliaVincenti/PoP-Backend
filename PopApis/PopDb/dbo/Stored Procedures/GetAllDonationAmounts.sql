@@ -14,6 +14,6 @@ BEGIN
     SELECT ISNULL(SUM(Payment.Amount), 0) AS Amount
 	FROM dbo.Auction INNER JOIN dbo.Payment WITH (NOLOCK)
 	ON Payment.AuctionId = Auction.Id
-	WHERE AuctionTypeId = 5 OR AuctionTypeId = 1
+	WHERE AuctionTypeId = 5 OR AuctionTypeId = 1 OR AuctionId = -1
 END
 GO

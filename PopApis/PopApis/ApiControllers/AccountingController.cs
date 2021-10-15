@@ -97,7 +97,10 @@ namespace PopApis.ApiControllers
         {
             var allDonationAmounts = this.GetAllDonationAmounts(startDate, endDate);
             decimal total = 0;
-            var sum = allDonationAmounts.Select(d => total + d.Amount);
+            foreach (var donation in allDonationAmounts)
+            {
+                total = total + donation.Amount;
+            }
             return total;
         }
 
