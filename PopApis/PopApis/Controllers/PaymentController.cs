@@ -17,7 +17,7 @@ namespace PopApis.Controllers
         // GET: Payment
         public ActionResult Index()
         {
-            return View("Index", _data.GetPayments()); // todo tiara getpayments
+            return View("Index", _data.GetPayments());
         }
 
         // GET: Payment/Create
