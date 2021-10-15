@@ -31,7 +31,7 @@ namespace PopLibrary.Data
                     new StoredProcedureParameter { Name = "@AuctionId", DbType = SqlDbType.Int, Value = itemToUpdate.AuctionId},
                     new StoredProcedureParameter { Name = "@CustomerId", DbType = SqlDbType.Int, Value = itemToUpdate.CustomerId },
                     new StoredProcedureParameter { Name = "@Complete", DbType = SqlDbType.Bit, Value = itemToUpdate.Complete },
-                    new StoredProcedureParameter { Name = "@StripeInvoiceItemId", DbType = SqlDbType.NVarChar, Value = itemToUpdate.StripeInvoiceItemId }
+                    new StoredProcedureParameter { Name = "@StripeInvoiceItemId", DbType = SqlDbType.NVarChar, Value = itemToUpdate.StripeInvoiceItemId },
                     new StoredProcedureParameter { Name = "@StripeInvoiceId", DbType = SqlDbType.NVarChar, Value = itemToUpdate.StripeInvoiceId},
                     new StoredProcedureParameter { Name = "@Created", DbType = SqlDbType.Timestamp, Value = itemToUpdate.Created },
                     new StoredProcedureParameter { Name = "@Amount", DbType = SqlDbType.Decimal, Value = itemToUpdate.Amount },
