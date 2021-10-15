@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PopLibrary.SqlModels
 {
@@ -14,17 +10,17 @@ namespace PopLibrary.SqlModels
 
         public int? CustomerId { get; set; }
 
-        public bool? Complete { get; set; }
+        public bool Complete { get; set; }
 
-        public string? StripeInvoiceItemId { get; set; }
+        public string StripeInvoiceItemId { get; set; }
 
-        public string? StripeInvoiceId { get; set; }
+        public string StripeInvoiceId { get; set; }
 
         public DateTime? Created { get; set; }
 
-        public decimal? Amount { get; set; }
+        public decimal Amount { get; set; }
 
-        public string? Description { get; set; }
+        public string Description { get; set; }
 
     }
 }

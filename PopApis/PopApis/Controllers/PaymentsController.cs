@@ -5,11 +5,11 @@ using System.Linq;
 
 namespace PopApis.Controllers
 {
-    public class PaymentController : CommonController
+    public class PaymentsController : CommonController
     {
         private PaymentData _data;
 
-        public PaymentController(PaymentData data)
+        public PaymentsController(PaymentData data)
         {
             _data = data;
         }
