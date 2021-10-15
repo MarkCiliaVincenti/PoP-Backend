@@ -222,7 +222,7 @@ namespace PopApis.ApiControllers
             return "Finalize operation successful";
         }
 
-        // GET api/accounting/pledge
+        // POST api/accounting/pledge
         /// <summary>
         /// Puts an incomplete payment in payments table.
         /// </summary>
@@ -243,6 +243,35 @@ namespace PopApis.ApiControllers
             });
 
             return $"successfully created pledge for {body.amount}";
+        }
+
+        // POST api/accounting/session
+        /// <summary>
+        /// Create stripe checkout session and return ID.
+        /// </summary>
+        [HttpPost("session")]
+        public SessionResponse Session([FromBody] SessionBody body)
+        {
+            var sessionId = _stripeAdapter.CreateSession(
+                body.Email,
+                body.Amount,
+                body.AuctionId);
+
+            return new SessionResponse() { Id = sessionId };
+        }
+
+        public class SessionBody
+        {
+            public string Email { get; set; }
+
+            public int AuctionId { get; set; }
+
+            public decimal Amount { get; set; }
+        }
+
+        public class SessionResponse
+        {
+            public string Id { get; set; }
         }
 
         public class PledgeBody
