@@ -20,7 +20,7 @@ namespace PopApis.ApiControllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Policy = "Admin")]
+    [Authorize(Policy = "User")]
     public class AccountingController : ControllerBase
     {
         private readonly FinalizeOptions _finalizeOptions;
