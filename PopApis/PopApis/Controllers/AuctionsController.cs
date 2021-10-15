@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace PopApis.Controllers
 {
-    public class AuctionsController : Controller
+    public class AuctionsController : CommonController
     {
         private AuctionData _data;
 
@@ -17,7 +17,7 @@ namespace PopApis.Controllers
         // GET: Auction
         public ActionResult Index()
         {
-            return View("Index", _data.GetAuctions());
+            return ViewWithSession("Index", _data.GetAuctions());
         }
 
         // GET: Auctions/Create

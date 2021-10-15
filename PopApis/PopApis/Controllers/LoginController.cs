@@ -1,18 +1,25 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Net.Http;
+using System.Threading.Tasks;
+using System.Web.Http;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PopLibrary;
 
 namespace PopApis.Controllers
 {
+    [AllowAnonymous]
     public class LoginController : Controller
     {
-        private IAuthenticationService _authenticationService;
+        private readonly HttpClient httpClient;
 
-        public LoginController(IAuthenticationService authenticationService)
+        public LoginController()
         {
-            this._authenticationService = authenticationService;
+            this.httpClient = new HttpClient();
         }
+
+        public object UTF8 { get; private set; }
+
         public IActionResult Index()
         {
             return View();
@@ -24,20 +31,24 @@ namespace PopApis.Controllers
             var password = Request.Form["Input.Password"];
             if (!string.IsNullOrWhiteSpace(userName) && !string.IsNullOrWhiteSpace(password))
             {
-                var user = await this._authenticationService.AuthenticateAsync(userName, password).ConfigureAwait(false);
-                if (user != null)
+                httpClient.BaseAddress = new Uri($"{this.Request.Scheme}://{this.Request.Host}");
+                var encodedUser = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes($"{userName}:{password}"));
+                httpClient.DefaultRequestHeaders.Add("Authorization", $"Basic {encodedUser}");
+                var response = await httpClient.GetAsync("/api/Authentication").ConfigureAwait(false);
+                if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
                 {
-                    HttpContext.Session.SetString("UserName", user.Name);
-                    HttpContext.Session.SetString("UserRole", user.Role);
                     return RedirectToAction("Index", "Home");
+                    //throw new UnauthorizedAccessException();
                 }
-                else
-                {
-                    return View("Index");
-                }
+                response.EnsureSuccessStatusCode();
+                HttpContext.Session.SetString("UserName", userName);
+                
+
+                HttpContext.Session.SetString("UserRole", "Admin");
+                return RedirectToAction("Index", "Admin");
             }
 
-            return View("Index");
+            return RedirectToAction("Index", "Home");
         }
 
         public ActionResult Logout()

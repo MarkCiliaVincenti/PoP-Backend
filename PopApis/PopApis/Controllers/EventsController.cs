@@ -5,7 +5,7 @@ using PopLibrary.SqlModels;
 
 namespace PopApis.Controllers
 {
-    public class EventsController : Controller
+    public class EventsController : CommonController
     {
         private EventData _data;
 
@@ -16,7 +16,7 @@ namespace PopApis.Controllers
         // GET: EventsController
         public ActionResult Index()
         {
-            return View("Index", _data.GetEvents());
+            return ViewWithSession("Index", _data.GetEvents());
         }
 
         // GET: Events/Create
