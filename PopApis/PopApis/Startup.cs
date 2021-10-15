@@ -65,6 +65,7 @@ namespace PopApis
             services.AddScoped<SqlAdapter>();
             services.AddScoped<AuctionData>();
             services.AddScoped<EventData>();
+            services.AddScoped<BidData>();
             services.AddScoped<AuctionController>();
             services.AddScoped<AccountingController>();
             services.AddScoped<FinalizeHelper>();

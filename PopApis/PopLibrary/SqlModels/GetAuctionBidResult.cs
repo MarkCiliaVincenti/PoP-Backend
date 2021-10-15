@@ -4,7 +4,7 @@ namespace PopLibrary.SqlModels
 {
     public class GetAuctionBidResult
     {
-        public int Id { get; set; }
+        public int Id { get; set; } = -1;
 
         public int AuctionId { get; set; }
 
@@ -12,6 +12,6 @@ namespace PopLibrary.SqlModels
 
         public string Email { get; set; }
 
-        public DateTime Timestamp { get; set; }
+        public DateTime? Timestamp { get; set; } = null;
     }
 }

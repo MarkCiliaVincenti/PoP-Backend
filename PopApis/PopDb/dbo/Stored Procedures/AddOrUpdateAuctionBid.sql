@@ -8,7 +8,7 @@
 )
 AS
 BEGIN
-   IF @Id IS NULL
+   IF @Id IS NULL OR @Id = -1
    BEGIN
 		INSERT INTO [dbo].[AuctionBid]
 				   ([AuctionId]
@@ -19,7 +19,7 @@ BEGIN
 				   (@AuctionId
 				   ,@Amount
 				   ,@Email
-				   ,COALESCE(@Timestamp, GETUTCDATE()))
+				   ,GETUTCDATE())
 	END
    IF NOT EXISTS (
 		SELECT TOP 1 1
