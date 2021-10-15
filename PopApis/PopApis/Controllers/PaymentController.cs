@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace PopApis.Controllers
 {
-    public class PaymentController : Controller
+    public class PaymentController : CommonController
     {
         private PaymentData _data;
 
@@ -17,7 +17,7 @@ namespace PopApis.Controllers
         // GET: Payment
         public ActionResult Index()
         {
-            return View("Index", _data.GetPayments());
+            return ViewWithSession("Index", _data.GetPayments());
         }
 
         // GET: Payment/Create
