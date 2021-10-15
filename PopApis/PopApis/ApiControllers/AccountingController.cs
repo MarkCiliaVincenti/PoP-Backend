@@ -253,7 +253,6 @@ namespace PopApis.ApiControllers
             public string description { get; set; }
         }
 
-        const string endpointSecret = "whsec_j7Fn816sxt8rBFqNbkhaytfrhmY9JhQK";
         [AllowAnonymous]
         [HttpPost("webhook")]
         public async Task<IActionResult> Index()
@@ -262,19 +261,32 @@ namespace PopApis.ApiControllers
             try
             {
                 var stripeEvent = EventUtility.ConstructEvent(json,
-                    Request.Headers["Stripe-Signature"], endpointSecret, 300, false);
+                    Request.Headers["Stripe-Signature"], _stripeAdapter.GetWebhookSecret(), 300, false);
 
                 // Handle the event
                 if (stripeEvent.Type == Events.PaymentIntentSucceeded)
                 {
-                    Console.WriteLine("hi");
-
                     PaymentIntent paymentIntent = (PaymentIntent)stripeEvent.Data.Object;
+
+                    if (string.IsNullOrEmpty(paymentIntent.InvoiceId))
+                    {
+                        return BadRequest();
+                    }
+
                     var email = paymentIntent.Customer.Email;
                     var stripeCustomerId = paymentIntent.Customer.Id;
                     var amount = paymentIntent.Amount % 100;
-                    var auctionId = "";
+                    string auctionId = "";
+                    int auctionIdInt;
                     paymentIntent.Metadata.TryGetValue("auctionId", out auctionId);
+                    if (string.IsNullOrEmpty(auctionId))
+                    {
+                        auctionIdInt = 0;
+                    }
+                    else
+                    {
+                        auctionIdInt = int.Parse(auctionId);
+                    }
 
                     var customerId = _sqlAdapter.ExecuteStoredProcedure<int>("dbo.AddOrUpdateCustomer", new List<StoredProcedureParameter>
                     {
@@ -284,7 +296,7 @@ namespace PopApis.ApiControllers
 
                     _sqlAdapter.ExecuteStoredProcedure<int>("dbo.AddOrUpdatePayment", new List<StoredProcedureParameter>
                     {
-                        new StoredProcedureParameter { Name="@AuctionId", DbType=SqlDbType.Int, Value=auctionId },
+                        new StoredProcedureParameter { Name="@AuctionId", DbType=SqlDbType.Int, Value=auctionIdInt },
                         new StoredProcedureParameter { Name="@CustomerId", DbType=SqlDbType.Int, Value=customerId },
                         new StoredProcedureParameter { Name="@Amount", DbType=SqlDbType.Decimal, Value=amount },
                     });

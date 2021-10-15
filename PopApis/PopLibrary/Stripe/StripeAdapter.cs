@@ -22,6 +22,11 @@ namespace PopLibrary.Stripe
             StripeConfiguration.ApiKey = stripeSettings.Key;
         }
 
+        public string GetWebhookSecret()
+        {
+            return _stripeSettings.WebhookSecret;
+        }
+
         public string GetOrCreateCustomerForEmail(string email)
         {
             var service = new CustomerService();
