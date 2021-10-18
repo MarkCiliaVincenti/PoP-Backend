@@ -111,9 +111,10 @@ namespace PopApis.ApiControllers
         /// Returns total amount raised between dates <paramref name="startDate"/> and <paramref name="endDate"/>.
         /// </summary>
         [HttpGet("total")]
-        public decimal getTotal([FromQuery] DateTime? startDate = null, [FromQuery] DateTime? endDate = null)
+        public TotalResponse getTotal([FromQuery] DateTime? startDate = null, [FromQuery] DateTime? endDate = null)
         {
-            return this.getTotalBidAmount(startDate, endDate) + this.getTotalDonationAmount(startDate, endDate);
+            var total = this.getTotalBidAmount(startDate, endDate) + this.getTotalDonationAmount(startDate, endDate);
+            return new TotalResponse() { Total = total };
         }
 
         private IEnumerable<GetAuctionIdResult> GetAllBidAuctionIDs([FromQuery] DateTime? startDate = null, [FromQuery] DateTime? endDate = null)
@@ -280,6 +281,11 @@ namespace PopApis.ApiControllers
         public class SessionResponse
         {
             public string Id { get; set; }
+        }
+
+        public class TotalResponse
+        {
+            public decimal Total { get; set; }
         }
 
         public class PledgeBody

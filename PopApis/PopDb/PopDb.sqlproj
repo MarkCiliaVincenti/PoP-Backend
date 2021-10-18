@@ -123,4 +123,7 @@
     <Folder Include="dbo\Tables\" />
     <Folder Include="dbo\Stored Procedures\" />
   </ItemGroup>
+  <ItemGroup>
+    <Build Include="dbo\Stored Procedures\dropall.sql" />
+  </ItemGroup>
 </Project>
