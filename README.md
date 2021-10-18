@@ -10,7 +10,9 @@ We use a basic auth schema with username and password sent encrypted in the head
 
 #### GET accounting/total
 ```json
-0.00
+{
+  "Total": 0.00
+}
 ```
 #### POST accounting/finalize
 - Creates invoices for all outstanding donation and bid payments for all users
