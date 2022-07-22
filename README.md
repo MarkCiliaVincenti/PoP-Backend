@@ -54,6 +54,14 @@ We use a basic auth schema with username and password sent encrypted in the head
 
 #### GET auction/{typeId}
 - Get all auctions under a specific type
+> 1 = give
+
+> 2 = live
+
+> 5 = donation
+
+> 6 = room
+
 ```json
 [
   {
