@@ -1,15 +1,15 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using AsyncKeyedLock;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using PopApis.Models;
 using PopLibrary;
 using PopLibrary.SqlModels;
 using System;
-using System.Data;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
-using PopApis.Models;
-using KeyedSemaphores;
-using Microsoft.AspNetCore.Http;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -20,6 +20,11 @@ namespace PopApis
     [Authorize(Policy = "User")]
     public class AuctionController : ControllerBase
     {
+        private static AsyncKeyedLocker<int> _asyncKeyedLocker = new AsyncKeyedLocker<int>(o =>
+        {
+            o.PoolSize = 20;
+            o.PoolInitialFill = 1;
+        });
         private SqlAdapter _sqlAdapter;
         public AuctionController(SqlAdapter sqlAdapter)
         {
@@ -96,7 +101,7 @@ namespace PopApis
             }
 
             // This is used to avoid race condition when 2 users are bidding the some auction id at the same time
-            using (await KeyedSemaphore.LockAsync(auctionId.ToString()))
+            using (await _asyncKeyedLocker.LockAsync(auctionId).ConfigureAwait(false))
             {
                 try
                 {
